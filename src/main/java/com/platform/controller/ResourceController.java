@@ -9,8 +9,10 @@ import com.platform.facade.reserve.exception.ReserveException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
@@ -55,8 +57,10 @@ public class ResourceController {
 	}
 
 	@RequestMapping(path = "/reserve", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-	public Boolean reserve(){
-		ReserveVO reserveVO = ReserveVO.builder().build();
+	public Boolean reserve(@RequestBody ReserveVO reserveVO){
+		if(reserveVO == null || !reserveVO.canReserve()){
+			return false;
+		}
 		Request<ReserveVO> request = Request.builder().entity(reserveVO).build();
 		Response<ReserveVO> response = reserveFacade.reserve(request);
 		return response.getResponseType().isSuccess();
