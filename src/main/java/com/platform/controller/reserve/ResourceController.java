@@ -1,7 +1,7 @@
-package com.platform.controller;
+package com.platform.controller.reserve;
 
-import com.platform.controller.vo.ReserveVO;
-import com.platform.controller.vo.ResourceType;
+import com.platform.controller.reserve.vo.ReserveVO;
+import com.platform.controller.reserve.vo.ResourceType;
 import com.platform.facade.Request;
 import com.platform.facade.Response;
 import com.platform.facade.reserve.ReserveFacade;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
@@ -57,7 +56,7 @@ public class ResourceController {
 	}
 
 	@RequestMapping(path = "/reserve", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-	public Boolean reserve(@RequestBody ReserveVO reserveVO){
+	public @ResponseBody Boolean reserve(@RequestBody ReserveVO reserveVO){
 		if(reserveVO == null || !reserveVO.canReserve()){
 			return false;
 		}

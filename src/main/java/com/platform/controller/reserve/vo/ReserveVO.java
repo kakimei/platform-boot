@@ -1,5 +1,6 @@
-package com.platform.controller.vo;
+package com.platform.controller.reserve.vo;
 
+import com.platform.repository.entity.Sex;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

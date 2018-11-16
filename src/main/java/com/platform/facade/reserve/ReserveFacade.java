@@ -1,7 +1,7 @@
 package com.platform.facade.reserve;
 
-import com.platform.controller.vo.ReserveVO;
-import com.platform.controller.vo.ResourceType;
+import com.platform.controller.reserve.vo.ReserveVO;
+import com.platform.controller.reserve.vo.ResourceType;
 import com.platform.facade.Request;
 import com.platform.facade.Response;
 import com.platform.facade.ResponseType;
@@ -15,7 +15,7 @@ import java.util.List;
 @Slf4j
 public class ReserveFacade {
 
-	public Response<ReserveVO> reserve(Request<ReserveVO> reserveVO){
+	public Response<ReserveVO> reserve(Request<ReserveVO> request){
 		// check resource can be reserve
 
 		// reserve resource
@@ -25,7 +25,7 @@ public class ReserveFacade {
 		// send reserve success message
 
 		// return vo
-		ReserveVO result = ReserveVO.builder().build();
+		ReserveVO result = request.getEntity();
 		return ReserveResponse.builder().responseType(ResponseType.SUCCESS).entity(result).build();
 	}
 
