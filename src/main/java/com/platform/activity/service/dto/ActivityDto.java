@@ -1,6 +1,7 @@
 package com.platform.activity.service.dto;
 
 import com.platform.activity.repository.entity.ActivityType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class ActivityDto {
 
 	private Long activityId;

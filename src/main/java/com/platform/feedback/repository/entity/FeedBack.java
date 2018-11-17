@@ -1,5 +1,6 @@
 package com.platform.feedback.repository.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ import javax.persistence.Table;
 @Table(name = "feedback")
 @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Setter
 @Getter
 public class FeedBack {

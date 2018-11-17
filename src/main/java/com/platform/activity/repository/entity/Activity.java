@@ -1,5 +1,6 @@
 package com.platform.activity.repository.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,7 @@ import javax.persistence.Table;
 @Table(name = "activity")
 @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Activity {
 
 	@Id

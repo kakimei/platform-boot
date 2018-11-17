@@ -3,6 +3,7 @@ package com.platform.reserve.service.dto;
 import com.platform.reserve.repository.entity.Sex;
 import com.platform.activity.service.dto.ActivityDto;
 import com.platform.feedback.service.dto.FeedBackDto;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import java.util.Date;
 @Builder
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class ReservationInfoDto {
 
 	private Long reservationInfoId;

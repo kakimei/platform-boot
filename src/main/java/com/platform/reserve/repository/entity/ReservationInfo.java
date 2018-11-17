@@ -1,5 +1,6 @@
 package com.platform.reserve.repository.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
@@ -17,6 +18,7 @@ import java.util.Date;
 @Table(name = "reservation_info")
 @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class ReservationInfo {
 
 	@Id
