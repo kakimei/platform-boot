@@ -18,8 +18,11 @@ import java.util.Date;
 public class ReservationInfo {
 
 	@Id
-	@Column(name = "reservation_info_id", unique = true)
+	@Column(name = "id", unique = true)
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+
+	@Column(name = "reservation_info_id")
 	private Long reservationInfoId;
 
 	@Column(name = "linkman_name", nullable = false)

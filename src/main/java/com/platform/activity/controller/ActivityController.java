@@ -30,7 +30,7 @@ public class ActivityController {
 		try {
 			return getReserveResource(ActivityType.TEAM);
 		} catch (ActivityException e) {
-			log.error("/resource/team/list error happened. {}", e.getMessage());
+			log.error("/activity/team/list error happened. {}", e.getMessage());
 		}
 		return new ArrayList<ActivityVO>();
 	}
@@ -41,7 +41,7 @@ public class ActivityController {
 		try {
 			return getReserveResource(ActivityType.SINGLE);
 		} catch (ActivityException e) {
-			log.error("/resource/single/list error happened. {}", e.getMessage());
+			log.error("/activity/single/list error happened. {}", e.getMessage());
 		}
 		return new ArrayList<ActivityVO>();
 	}

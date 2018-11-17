@@ -1,6 +1,7 @@
 package com.platform.activity.repository.entity;
 
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,11 +15,15 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "activity")
 @Builder
+@NoArgsConstructor
 public class Activity {
 
 	@Id
-	@Column(name = "activity_id", unique = true)
+	@Column(name = "id", unique = true)
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+
+	@Column(name = "activity_id")
 	private Long activityId;
 
 	@Column(name = "activityType", nullable = false)
