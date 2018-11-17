@@ -8,9 +8,7 @@ public interface ReservationInfoService {
 
 	void save(ReservationInfoDto reservationInfoDto);
 
-	ReservationInfoDto findReservationInfoById(Long id);
+	ReservationInfoDto findReservationInfoById(Long reservationInfoId);
 
 	List<ReservationInfoDto> findReservationInfoByLinkman(String linkmanName);
-
-	void update(ReservationInfoDto reservationInfoDto);
 }

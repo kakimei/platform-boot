@@ -1,6 +1,7 @@
 package com.platform.reserve.repository.entity;
 
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,6 +16,7 @@ import java.util.Date;
 @Entity
 @Table(name = "reservation_info")
 @Builder
+@NoArgsConstructor
 public class ReservationInfo {
 
 	@Id
@@ -23,6 +25,7 @@ public class ReservationInfo {
 	private Long id;
 
 	@Column(name = "reservation_info_id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long reservationInfoId;
 
 	@Column(name = "linkman_name", nullable = false)

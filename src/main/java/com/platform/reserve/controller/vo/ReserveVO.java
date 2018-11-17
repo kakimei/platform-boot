@@ -14,6 +14,7 @@ import java.util.Date;
 @Data
 @Slf4j
 public class ReserveVO {
+	private Long reservationInfoId;
 	private String linkManName;
 	private Sex sex;
 	private Integer age;

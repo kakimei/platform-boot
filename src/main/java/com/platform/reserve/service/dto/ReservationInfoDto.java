@@ -5,11 +5,13 @@ import com.platform.activity.service.dto.ActivityDto;
 import com.platform.feedback.service.dto.FeedBackDto;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Builder
 @Data
+@NoArgsConstructor
 public class ReservationInfoDto {
 
 	private Long reservationInfoId;
@@ -29,6 +31,8 @@ public class ReservationInfoDto {
 	private Integer peopleCount;
 
 	private Boolean signIn;
+
+	private Long activityId;
 
 	private ActivityDto activityDto;
 

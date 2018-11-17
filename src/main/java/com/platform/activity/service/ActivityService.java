@@ -10,4 +10,5 @@ public interface ActivityService {
 	List<ActivityDto> findActivityByType(ActivityType activityType);
 
 	void saveOrUpdate(ActivityDto activityDto);
+
 }

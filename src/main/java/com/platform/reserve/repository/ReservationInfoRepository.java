@@ -4,6 +4,12 @@ import com.platform.reserve.repository.entity.ReservationInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ReservationInfoRepository extends JpaRepository<ReservationInfo, Long> {
+
+	ReservationInfo findByReservationInfoIdAndDeleteFalse(Long reservationInfoId);
+
+	List<ReservationInfo> findByLinkManNameAndDeleteFalse(String linkManName);
 }

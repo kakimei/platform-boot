@@ -14,18 +14,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Slf4j
 @Controller
-@RequestMapping(path = "/resource")
-public class ResourceController {
+@RequestMapping(path = "/reserve")
+public class ReserveController {
 
 	@Autowired
 	private ReserveFacade reserveFacade;
 
-	@RequestMapping(path = "/reserve", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+	@RequestMapping(method = RequestMethod.POST, produces = "application/json; charset=utf-8")
 	public @ResponseBody Boolean reserve(@RequestBody ReserveVO reserveVO){
 		if(reserveVO == null || !reserveVO.canReserve()){
 			return false;
 		}
-		Request<ReserveVO> request = Request.builder().entity(reserveVO).build();
+		Request<ReserveVO> request = Request.<ReserveVO>builder().entity(reserveVO).build();
 		Response<ReserveVO> response = reserveFacade.reserve(request);
 		return response.getResponseType().isSuccess();
 	}
