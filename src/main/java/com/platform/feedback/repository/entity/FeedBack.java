@@ -1,6 +1,9 @@
 package com.platform.feedback.repository.entity;
 
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,6 +17,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "feedback")
 @Builder
+@NoArgsConstructor
+@Setter
+@Getter
 public class FeedBack {
 
 	@Id
@@ -22,6 +28,7 @@ public class FeedBack {
 	private Long id;
 
 	@Column(name = "feedback_id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long feedbackId;
 
 	@Column(name = "reservation_info_id")

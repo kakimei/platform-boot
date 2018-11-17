@@ -24,6 +24,7 @@ public class Activity {
 	private Long id;
 
 	@Column(name = "activity_id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long activityId;
 
 	@Column(name = "activityType", nullable = false)

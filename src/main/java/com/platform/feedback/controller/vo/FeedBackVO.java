@@ -1,15 +1,15 @@
-package com.platform.feedback.service.dto;
+package com.platform.feedback.controller.vo;
 
-import com.platform.feedback.repository.entity.FeedBackType;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Builder
 @Data
+@Slf4j
 @NoArgsConstructor
-public class FeedBackDto {
-
+public class FeedBackVO {
 	private Long reservationInfoId;
 
 	private FeedBackType feedBackType;

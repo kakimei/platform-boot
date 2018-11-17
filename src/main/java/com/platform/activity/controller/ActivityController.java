@@ -47,7 +47,7 @@ public class ActivityController {
 	}
 
 	private List<ActivityVO> getReserveResource(ActivityType activityType) throws ActivityException {
-		Response<List<ActivityVO>> response = activityFacade.list(Request.builder().entity(activityType).build());
+		Response<List<ActivityVO>> response = activityFacade.list(Request.<ActivityType>builder().entity(activityType).build());
 		if (response.getResponseType().isSuccess()) {
 			return response.getEntity();
 		}
