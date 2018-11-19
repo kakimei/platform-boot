@@ -30,7 +30,7 @@ public class ReservationInfoServiceImpl implements ReservationInfoService{
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void save(ReservationInfoDto reservationInfoDto) {
 		if(reservationInfoDto.getReservationInfoId() != null){
-			ReservationInfo reservationInfo = reservationInfoRepository.findByReservationInfoIdAndDeleteFalse(
+			ReservationInfo reservationInfo = reservationInfoRepository.findByReservationInfoIdAndDeletedFalse(
 				reservationInfoDto.getReservationInfoId());
 			if(reservationInfo != null){
 				BeanUtils.copyProperties(reservationInfoDto, reservationInfo, "reservationInfoId");
@@ -50,7 +50,7 @@ public class ReservationInfoServiceImpl implements ReservationInfoService{
 			log.warn("reservationInfoId is null.");
 			return null;
 		}
-		ReservationInfo reservationInfo = reservationInfoRepository.findByReservationInfoIdAndDeleteFalse(reservationInfoId);
+		ReservationInfo reservationInfo = reservationInfoRepository.findByReservationInfoIdAndDeletedFalse(reservationInfoId);
 		if(reservationInfo == null){
 			log.warn("this reservationInfoId does not exist. reservationInfoId : {}", reservationInfoId);
 			return null;
@@ -66,7 +66,7 @@ public class ReservationInfoServiceImpl implements ReservationInfoService{
 			log.warn("linkmanName is null.");
 			return result;
 		}
-		List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByLinkManNameAndDeleteFalse(linkmanName);
+		List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByLinkManNameAndDeletedFalse(linkmanName);
 		if(CollectionUtils.isEmpty(reservationInfoList)){
 			return result;
 		}

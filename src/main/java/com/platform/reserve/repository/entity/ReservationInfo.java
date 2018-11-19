@@ -52,8 +52,8 @@ public class ReservationInfo {
 	@Column(name = "people_count", nullable = false)
 	private Integer peopleCount;
 
-	@Column(name = "delete", nullable = false)
-	private Boolean delete;
+	@Column(name = "deleted", nullable = false)
+	private Boolean deleted;
 
 	@Column(name = "sign_in", nullable = false)
 	private Boolean signIn;
