@@ -25,12 +25,8 @@ import javax.persistence.Table;
 public class FeedBack {
 
 	@Id
-	@Column(name = "id", unique = true)
+	@Column(name = "feedback_id", unique = true)
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
-
-	@Column(name = "feedback_id")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long feedbackId;
 
 	@Column(name = "reservation_info_id")

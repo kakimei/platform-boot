@@ -21,7 +21,7 @@ public class FeedBackDtoTransferBuilder {
 			return null;
 		}
 		FeedBack feedBack = new FeedBack();
-		BeanUtils.copyProperties(feedBackDto, feedBack, "reservationInfoId");
+		BeanUtils.copyProperties(feedBackDto, feedBack);
 		return feedBack;
 	}
 

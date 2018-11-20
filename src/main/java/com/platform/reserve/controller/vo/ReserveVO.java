@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 @AllArgsConstructor
@@ -33,8 +35,12 @@ public class ReserveVO {
 			log.error("phoneNumber can not be null.");
 			return false;
 		}
-		if(reserveBegin == null || reserveEnd == null){
-			log.error("reserve date can not be null.");
+		if(reserveBegin == null || reserveEnd == null || reserveEnd.before(reserveBegin)){
+			log.error("reserve date can not be null or reserveEnd is before reserveBegin.");
+			return false;
+		}
+		if(!todayBeforeCurrentDay()){
+			log.error("can not reserve because reserve begin date is after today.");
 			return false;
 		}
 		if(peopleCount == null || peopleCount <=0 ){
@@ -46,5 +52,11 @@ public class ReserveVO {
 			return false;
 		}
 		return true;
+	}
+
+	public boolean todayBeforeCurrentDay(){
+		LocalDate today = LocalDate.now();
+		LocalDate beginDate = reserveBegin.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		return today.isBefore(beginDate);
 	}
 }

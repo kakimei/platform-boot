@@ -2,7 +2,9 @@ package com.platform.reserve.repository.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,15 +21,13 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class ReservationInfo {
 
 	@Id
-	@Column(name = "id", unique = true)
+	@Column(name = "reservation_info_id", unique = true)
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
-
-	@Column(name = "reservation_info_id")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long reservationInfoId;
 
 	@Column(name = "linkman_name", nullable = false)
@@ -53,10 +53,10 @@ public class ReservationInfo {
 	private Integer peopleCount;
 
 	@Column(name = "deleted", nullable = false)
-	private Boolean deleted;
+	private Boolean deleted = false;
 
 	@Column(name = "sign_in", nullable = false)
-	private Boolean signIn;
+	private Boolean signIn = false;
 
 	@Column(name = "activity_id", nullable = false)
 	private Long activityId;

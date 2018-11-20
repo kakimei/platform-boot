@@ -37,7 +37,8 @@ public class ReserveDtoTransferBuilder {
 			return null;
 		}
 		ReservationInfo reservationInfo = new ReservationInfo();
-		BeanUtils.copyProperties(reservationInfoDto, reservationInfo, "reservationInfoId");
+		BeanUtils.copyProperties(reservationInfoDto, reservationInfo, "reservationInfoId", "signIn");
+		reservationInfo.setSignIn(reservationInfoDto.getSignIn() == null ? false : reservationInfoDto.getSignIn());
 		return reservationInfo;
 	}
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping(value = "/feedback")
@@ -17,7 +18,7 @@ public class FeedBackController {
 	private FeedBackFacade feedBackFacade;
 
 	@RequestMapping(value = "/thumbsUp", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-	public Boolean thumbsUp(@RequestBody FeedBackVO feedBackVO){
+	public @ResponseBody Boolean thumbsUp(@RequestBody FeedBackVO feedBackVO){
 		Request<Long> request = Request.<Long>builder().entity(feedBackVO.getReservationInfoId()).build();
 		feedBackFacade.thumbsUp(request);
 		return true;

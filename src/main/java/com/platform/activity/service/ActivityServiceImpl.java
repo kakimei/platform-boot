@@ -1,5 +1,6 @@
 package com.platform.activity.service;
 
+import com.platform.activity.facade.exception.ActivityException;
 import com.platform.activity.repository.ActivityRepository;
 import com.platform.activity.repository.entity.Activity;
 import com.platform.activity.repository.entity.ActivityType;
@@ -41,13 +42,17 @@ public class ActivityServiceImpl implements ActivityService{
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void saveOrUpdate(ActivityDto activityDto) {
-		if(activityDto.getActivityId() != null){
-			Activity activity = activityRepository.findActivityByActivityId(activityDto.getActivityId());
-			BeanUtils.copyProperties(activityDto, activity, "id");
-			activityRepository.save(activity);
-		}else {
-			activityRepository.save(activityDtoTransferBuilder.toEntity(activityDto));
+	public void saveOrUpdate(ActivityDto activityDto) throws ActivityException {
+		try {
+			if (activityDto.getActivityId() != null) {
+				Activity activity = activityRepository.findActivityByActivityId(activityDto.getActivityId());
+				BeanUtils.copyProperties(activityDto, activity, "id");
+				activityRepository.save(activity);
+			} else {
+				activityRepository.save(activityDtoTransferBuilder.toEntity(activityDto));
+			}
+		}catch (Exception e){
+			throw new ActivityException("activity saveOrUpdate error happened.", e);
 		}
 	}
 }

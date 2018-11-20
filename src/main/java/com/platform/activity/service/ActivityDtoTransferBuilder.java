@@ -18,7 +18,8 @@ public class ActivityDtoTransferBuilder {
 			return null;
 		}
 		ActivityDto activityDto = new ActivityDto();
-		BeanUtils.copyProperties(activityVO, activityDto);
+		BeanUtils.copyProperties(activityVO, activityDto, "activityType");
+		activityDto.setActivityType(toActivityType(activityVO.getActivityType()));
 		return activityDto;
 	}
 
@@ -28,7 +29,8 @@ public class ActivityDtoTransferBuilder {
 			return null;
 		}
 		ActivityVO activityVO = new ActivityVO();
-		BeanUtils.copyProperties(activityDto, activityVO);
+		BeanUtils.copyProperties(activityDto, activityVO, "activityType");
+		activityVO.setActivityType(toActivityType(activityDto.getActivityType()));
 		return activityVO;
 	}
 
@@ -54,5 +56,9 @@ public class ActivityDtoTransferBuilder {
 
 	public ActivityType toActivityType(com.platform.activity.controller.vo.ActivityType activityType){
 		return ActivityType.valueOf(activityType.name());
+	}
+
+	public com.platform.activity.controller.vo.ActivityType toActivityType(ActivityType activityType){
+		return com.platform.activity.controller.vo.ActivityType.valueOf(activityType.name());
 	}
 }

@@ -31,22 +31,18 @@ public class FeedBackServiceImpl implements FeedBackService{
 			log.warn("no feedback need to save.");
 			return;
 		}
-		if(feedBackDto.getReservationInfoId() == null){
-			FeedBack feedBack = feedBackDtoTransferBuilder.toEntity(feedBackDto);
+
+		FeedBack feedBack = feedBackRepository.findByReservationInfoIdAndFeedBackType(
+			feedBackDto.getReservationInfoId(), feedBackDto.getFeedBackType());
+		if (feedBack == null) {
+			feedBack = feedBackDtoTransferBuilder.toEntity(feedBackDto);
 			feedBack.setCount(1);
 			feedBackRepository.save(feedBack);
-		}else{
-			FeedBack feedBack = feedBackRepository.findByReservationInfoIdAndFeedBackType(
-				feedBackDto.getReservationInfoId(), feedBackDto.getFeedBackType());
-			if(feedBack == null){
-				feedBack = feedBackDtoTransferBuilder.toEntity(feedBackDto);
-				feedBack.setCount(1);
-				feedBackRepository.save(feedBack);
-				return;
-			}
-			feedBack.setCount(feedBack.getCount() + 1);
-			feedBackRepository.save(feedBack);
+			return;
 		}
+		feedBack.setCount(feedBack.getCount() + 1);
+		feedBackRepository.save(feedBack);
+
 	}
 
 	@Override

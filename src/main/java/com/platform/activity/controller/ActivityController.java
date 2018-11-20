@@ -9,6 +9,7 @@ import com.platform.facade.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -54,4 +55,9 @@ public class ActivityController {
 		throw new ActivityException(response.getErrMsg());
 	}
 
+	@RequestMapping(path = "/save", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+	public @ResponseBody Boolean save(@RequestBody ActivityVO activityVO){
+		Response<ActivityVO> response = activityFacade.save(Request.<ActivityVO>builder().entity(activityVO).build());
+		return response.getResponseType().isSuccess();
+	}
 }

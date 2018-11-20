@@ -8,6 +8,8 @@ import com.platform.feedback.service.dto.FeedBackDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -19,6 +21,7 @@ public class FeedBackFacade {
 	@Autowired
 	private FeedBackDtoTransferBuilder feedBackDtoTransferBuilder;
 
+	@Transactional(propagation = Propagation.REQUIRED)
 	public void thumbsUp(Request<Long> reservationInfoId){
 		thumbs(reservationInfoId.getEntity(), FeedBackType.GOOD);
 	}
