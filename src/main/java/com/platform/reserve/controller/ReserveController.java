@@ -6,6 +6,7 @@ import com.platform.facade.Response;
 import com.platform.reserve.facade.ReserveFacade;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,9 +21,16 @@ public class ReserveController {
 	@Autowired
 	private ReserveFacade reserveFacade;
 
+	@Value("#{environment['people.number.threshold']}")
+	protected int PEOPLE_NUMBER_THRESHOLD;
+
 	@RequestMapping(method = RequestMethod.POST, produces = "application/json; charset=utf-8")
 	public @ResponseBody Boolean reserve(@RequestBody ReserveVO reserveVO){
-		if(reserveVO == null || !reserveVO.canReserve()){
+		if(reserveVO == null){
+			return false;
+		}
+		reserveVO.setPeopleNumberThreshold(PEOPLE_NUMBER_THRESHOLD);
+		if(!reserveVO.canReserve()){
 			return false;
 		}
 		Request<ReserveVO> request = Request.<ReserveVO>builder().entity(reserveVO).build();

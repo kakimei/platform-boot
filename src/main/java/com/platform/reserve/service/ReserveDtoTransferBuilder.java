@@ -1,7 +1,9 @@
 package com.platform.reserve.service;
 
 import com.platform.reserve.controller.vo.ReserveVO;
+import com.platform.reserve.repository.entity.ActivityType;
 import com.platform.reserve.repository.entity.ReservationInfo;
+import com.platform.reserve.repository.entity.Sex;
 import com.platform.reserve.service.dto.ReservationInfoDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -18,6 +20,8 @@ public class ReserveDtoTransferBuilder {
 		}
 		ReservationInfoDto reservationInfoDto = new ReservationInfoDto();
 		BeanUtils.copyProperties(reserveVO, reservationInfoDto);
+		reservationInfoDto.setActivityType(toActivityType(reserveVO.getActivityType()));
+		reservationInfoDto.setSex(toSex(reserveVO.getSex()));
 		return reservationInfoDto;
 	}
 
@@ -40,5 +44,13 @@ public class ReserveDtoTransferBuilder {
 		BeanUtils.copyProperties(reservationInfoDto, reservationInfo, "reservationInfoId", "signIn");
 		reservationInfo.setSignIn(reservationInfoDto.getSignIn() == null ? false : reservationInfoDto.getSignIn());
 		return reservationInfo;
+	}
+
+	public ActivityType toActivityType(com.platform.reserve.controller.vo.ActivityType activityType){
+		return ActivityType.valueOf(activityType.name());
+	}
+
+	public Sex toSex(com.platform.reserve.controller.vo.Sex sex){
+		return Sex.valueOf(sex.name());
 	}
 }

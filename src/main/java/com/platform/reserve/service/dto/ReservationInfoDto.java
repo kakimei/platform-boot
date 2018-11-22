@@ -1,7 +1,7 @@
 package com.platform.reserve.service.dto;
 
+import com.platform.reserve.repository.entity.ActivityType;
 import com.platform.reserve.repository.entity.Sex;
-import com.platform.activity.service.dto.ActivityDto;
 import com.platform.feedback.service.dto.FeedBackDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,7 +36,7 @@ public class ReservationInfoDto {
 
 	private Long activityId;
 
-	private ActivityDto activityDto;
+	private ActivityType activityType;
 
 	private FeedBackDto feedBackDto;
 }

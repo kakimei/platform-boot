@@ -1,6 +1,5 @@
 package com.platform.reserve.facade;
 
-import com.platform.activity.service.ActivityService;
 import com.platform.common.util.MailService;
 import com.platform.reserve.controller.vo.ReserveVO;
 import com.platform.facade.Request;
@@ -19,9 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReserveFacade {
 
 	@Autowired
-	private ActivityService activityService;
-
-	@Autowired
 	private MailService mailService;
 
 	@Autowired
@@ -32,17 +28,9 @@ public class ReserveFacade {
 
 	@Transactional(propagation = Propagation.REQUIRED)
 	public Response<ReserveVO> reserve(Request<ReserveVO> request){
-		// check resource can be reserve
-
-		// reserve resource
-
-		// update resource
-
-		// send reserve success message
-
-		// return vo
 		ReserveVO reserveVO = request.getEntity();
 		reservationInfoService.save(reserveDtoTransferBuilder.toDto(reserveVO));
+		mailService.sendMail("yiming.he@coupang.com", "reserve success", "test!");
 		return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.SUCCESS).entity(reserveVO).build();
 	}
 

@@ -1,6 +1,5 @@
 package com.platform.reserve.controller.vo;
 
-import com.platform.reserve.repository.entity.Sex;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,7 +23,8 @@ public class ReserveVO {
 	private Date reserveBegin;
 	private Date reserveEnd;
 	private Integer peopleCount;
-	private Long activityId;
+	private ActivityType activityType;
+	private Integer peopleNumberThreshold = 10;
 
 	public boolean canReserve(){
 		if(StringUtils.isEmpty(this.linkManName)){
@@ -47,16 +47,24 @@ public class ReserveVO {
 			log.error("people can not be 0.");
 			return false;
 		}
-		if(activityId == null){
+		if(activityType == null){
 			log.error("activity can not be null");
+			return false;
+		}
+		if(!teamActivityNumberCheck()){
+			log.error("activity type does not match people number");
 			return false;
 		}
 		return true;
 	}
 
-	public boolean todayBeforeCurrentDay(){
+	private boolean todayBeforeCurrentDay(){
 		LocalDate today = LocalDate.now();
 		LocalDate beginDate = reserveBegin.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		return today.isBefore(beginDate);
+	}
+
+	private boolean teamActivityNumberCheck(){
+		return activityType.isTeam() ? (peopleCount > peopleNumberThreshold) : (peopleCount <= peopleNumberThreshold);
 	}
 }

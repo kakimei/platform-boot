@@ -58,7 +58,7 @@ public class ReservationInfo {
 	@Column(name = "sign_in", nullable = false)
 	private Boolean signIn = false;
 
-	@Column(name = "activity_id", nullable = false)
-	private Long activityId;
-
+	@Column(name = "activity_type", nullable = false)
+	@Enumerated(value = EnumType.STRING)
+	private ActivityType activityType;
 }
