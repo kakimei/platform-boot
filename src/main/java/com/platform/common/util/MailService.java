@@ -4,18 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 public class MailService {
-
-	@Autowired
-	private Environment environment;
 
 	@Value("#{environment['mail.host.name']}")
 	private String hostName;
@@ -34,6 +29,7 @@ public class MailService {
 			email.setMsg(text);
 			email.addTo(sendTo);
 			email.send();
+			log.info("send success. target email:{}, subject:{}, content:{}", sendTo, subject, text);
 		}catch (EmailException e){
 			log.error("send email failed. {}", e);
 		}
@@ -41,11 +37,12 @@ public class MailService {
 
 	private Email getEmail() throws EmailException{
 		Email email = new SimpleEmail();
-		email.setHostName(environment.getProperty(hostName));
-		email.setSmtpPort(Integer.valueOf(environment.getProperty(port)));
-		email.setAuthentication(environment.getProperty(userName), environment.getProperty(password));
+		email.setHostName(hostName);
+		email.setSmtpPort(Integer.valueOf(port));
+		email.setAuthentication(userName, password);
 		email.setSSL(true);
-		email.setFrom(environment.getProperty(userName));
+		email.setFrom(userName);
+		email.setCharset("UTF-8");
 		return email;
 	}
 }
