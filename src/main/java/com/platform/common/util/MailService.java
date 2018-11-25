@@ -1,6 +1,7 @@
 package com.platform.common.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
@@ -22,16 +23,18 @@ public class MailService {
 	private String password;
 
 	@Async
-	public void sendMail(String sendTo, String subject, String text){
+	public void sendMail(String sendTo, String subject, String text, SendMailCallback sendMailCallback) throws EmailException{
 		try {
 			Email email = getEmail();
 			email.setSubject(subject);
 			email.setMsg(text);
 			email.addTo(sendTo);
-			email.send();
-			log.info("send success. target email:{}, subject:{}, content:{}", sendTo, subject, text);
+			String messageId = email.send();
+			log.info("send success. message id:{}, target email:{}, subject:{}, content:{}", messageId, sendTo, subject, text);
+			callback(messageId, sendMailCallback);
 		}catch (EmailException e){
 			log.error("send email failed. {}", e);
+			throw e;
 		}
 	}
 
@@ -44,5 +47,11 @@ public class MailService {
 		email.setFrom(userName);
 		email.setCharset("UTF-8");
 		return email;
+	}
+
+	private void callback(String messageId, SendMailCallback sendMailCallback){
+		if(StringUtils.isNoneBlank(messageId)){
+			sendMailCallback.execute();
+		}
 	}
 }

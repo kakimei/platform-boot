@@ -1,6 +1,7 @@
 package com.platform.reserve.facade;
 
 import com.platform.common.util.MailService;
+import com.platform.common.util.SendMailCallback;
 import com.platform.reserve.controller.vo.ActivityType;
 import com.platform.reserve.controller.vo.ReserveVO;
 import com.platform.facade.Request;
@@ -11,12 +12,10 @@ import com.platform.reserve.service.ReservationInfoService;
 import com.platform.reserve.service.ReserveDtoTransferBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.mail.EmailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -53,11 +52,19 @@ public class ReserveFacade {
 
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
 
-	@Transactional(propagation = Propagation.REQUIRED)
 	public Response<ReserveVO> reserve(Request<ReserveVO> request){
 		ReserveVO reserveVO = request.getEntity();
-		reservationInfoService.save(reserveDtoTransferBuilder.toDto(reserveVO));
-		mailService.sendMail(emailReceiver, emailSubject, buildEmailContent(reserveVO, emailContentPlatform));
+		try {
+			mailService.sendMail(emailReceiver, emailSubject, buildEmailContent(reserveVO, emailContentPlatform), new SendMailCallback() {
+				@Override
+				public void execute() {
+					reservationInfoService.save(reserveDtoTransferBuilder.toDto(reserveVO));
+				}
+			});
+		} catch (EmailException e) {
+			log.error(e.getMessage(), e);
+			return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.FAIL).entity(reserveVO).build();
+		}
 		return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.SUCCESS).entity(reserveVO).build();
 	}
 
