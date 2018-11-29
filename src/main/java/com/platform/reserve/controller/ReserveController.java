@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+
 @Slf4j
 @RestController
 @RequestMapping(path = "/reserve")
@@ -24,8 +26,9 @@ public class ReserveController {
 	@Value("#{environment['people.number.threshold']}")
 	protected int PEOPLE_NUMBER_THRESHOLD;
 
-	@RequestMapping(method = RequestMethod.POST, produces = "application/json; charset=utf-8", headers = "Access-Control-Allow-Origin=*")
-	public @ResponseBody Boolean reserve(@RequestBody ReserveVO reserveVO){
+	@RequestMapping(method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+	public @ResponseBody Boolean reserve(@RequestBody ReserveVO reserveVO, HttpServletResponse servletResponse){
+		servletResponse.setHeader("Access-Control-Allow-Origin", "*");
 		if(reserveVO == null){
 			return false;
 		}
