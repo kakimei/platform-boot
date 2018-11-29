@@ -24,7 +24,7 @@ public class ReserveController {
 	@Value("#{environment['people.number.threshold']}")
 	protected int PEOPLE_NUMBER_THRESHOLD;
 
-	@RequestMapping(method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+	@RequestMapping(method = RequestMethod.POST, produces = "application/json; charset=utf-8", headers = "Access-Control-Allow-Origin=*")
 	public @ResponseBody Boolean reserve(@RequestBody ReserveVO reserveVO){
 		if(reserveVO == null){
 			return false;
