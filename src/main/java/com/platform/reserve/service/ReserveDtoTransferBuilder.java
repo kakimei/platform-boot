@@ -50,7 +50,27 @@ public class ReserveDtoTransferBuilder {
 		return ActivityType.valueOf(activityType.name());
 	}
 
+	public com.platform.reserve.controller.vo.ActivityType toActivityType(ActivityType activityType){
+		return com.platform.reserve.controller.vo.ActivityType.valueOf(activityType.name());
+	}
+
 	public Sex toSex(com.platform.reserve.controller.vo.Sex sex){
 		return Sex.valueOf(sex.name());
+	}
+
+	public com.platform.reserve.controller.vo.Sex toSex(Sex sex){
+		return com.platform.reserve.controller.vo.Sex.valueOf(sex.name());
+	}
+
+	public ReserveVO toVO(ReservationInfoDto reservationInfoDto){
+		if(reservationInfoDto == null){
+			log.warn("reservationInfoDto is null");
+			return null;
+		}
+		ReserveVO reserveVO = new ReserveVO();
+		BeanUtils.copyProperties(reservationInfoDto, reserveVO);
+		reserveVO.setActivityType(toActivityType(reservationInfoDto.getActivityType()));
+		reserveVO.setSex(toSex(reservationInfoDto.getSex()));
+		return reserveVO;
 	}
 }

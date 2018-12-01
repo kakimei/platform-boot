@@ -1,5 +1,6 @@
 package com.platform.reserve.controller.vo;
 
+import com.platform.feedback.controller.vo.FeedBackVO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,6 +26,9 @@ public class ReserveVO {
 	private Integer peopleCount;
 	private ActivityType activityType;
 	private Integer peopleNumberThreshold = 10;
+	private String userName;
+	private Boolean signIn;
+	private Integer feedBack;
 
 	public boolean canReserve(){
 		if(StringUtils.isEmpty(this.linkManName)){

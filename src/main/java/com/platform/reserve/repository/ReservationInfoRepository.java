@@ -9,7 +9,13 @@ import java.util.List;
 @Repository
 public interface ReservationInfoRepository extends JpaRepository<ReservationInfo, Long> {
 
+	ReservationInfo findByReservationInfoIdAndUserNameAndDeletedFalse(Long reservationInfoId, String userName);
+
 	ReservationInfo findByReservationInfoIdAndDeletedFalse(Long reservationInfoId);
 
 	List<ReservationInfo> findByLinkManNameAndDeletedFalse(String linkManName);
+
+	List<ReservationInfo> findByUserNameOrderByReservationInfoId(String userName);
+
+	List<ReservationInfo> findByDeletedFalse();
 }

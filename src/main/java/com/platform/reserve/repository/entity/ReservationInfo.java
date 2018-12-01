@@ -61,4 +61,7 @@ public class ReservationInfo {
 	@Column(name = "activity_type", nullable = false)
 	@Enumerated(value = EnumType.STRING)
 	private ActivityType activityType;
+
+	@Column(name = "user_name", nullable = false)
+	private String userName;
 }

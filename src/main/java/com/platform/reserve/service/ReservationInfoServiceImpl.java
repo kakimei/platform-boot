@@ -45,12 +45,12 @@ public class ReservationInfoServiceImpl implements ReservationInfoService{
 
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS)
-	public ReservationInfoDto findReservationInfoById(Long reservationInfoId) {
-		if(reservationInfoId == null){
-			log.warn("reservationInfoId is null.");
+	public ReservationInfoDto findReservationInfoById(String user, Long reservationInfoId) {
+		if(reservationInfoId == null || StringUtils.isBlank(user)){
+			log.warn("reservationInfoId is null or user is null.");
 			return null;
 		}
-		ReservationInfo reservationInfo = reservationInfoRepository.findByReservationInfoIdAndDeletedFalse(reservationInfoId);
+		ReservationInfo reservationInfo = reservationInfoRepository.findByReservationInfoIdAndUserNameAndDeletedFalse(reservationInfoId, user);
 		if(reservationInfo == null){
 			log.warn("this reservationInfoId does not exist. reservationInfoId : {}", reservationInfoId);
 			return null;
@@ -72,5 +72,51 @@ public class ReservationInfoServiceImpl implements ReservationInfoService{
 		}
 		reservationInfoList.forEach(reservationInfo -> result.add(reserveDtoTransferBuilder.toDto(reservationInfo)));
 		return result;
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public List<ReservationInfoDto> findReservationInfoByUser(String userName) {
+		List<ReservationInfoDto> result = new ArrayList<>();
+		if(StringUtils.isBlank(userName)){
+			log.warn("userName is null.");
+			return result;
+		}
+		List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByUserNameOrderByReservationInfoId(userName);
+		if(CollectionUtils.isEmpty(reservationInfoList)){
+			return result;
+		}
+		reservationInfoList.forEach(reservationInfo -> result.add(reserveDtoTransferBuilder.toDto(reservationInfo)));
+		return result;
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public List<ReservationInfoDto> findAllActiveReservationInfo(){
+		List<ReservationInfoDto> result = new ArrayList<>();
+		List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByDeletedFalse();
+		if(CollectionUtils.isEmpty(reservationInfoList)){
+			return result;
+		}
+		reservationInfoList.forEach(reservationInfo -> result.add(reserveDtoTransferBuilder.toDto(reservationInfo)));
+		return result;
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED)
+	public ReservationInfoDto singIn(String user, Long reservationInfoId) {
+		if(StringUtils.isBlank(user) || reservationInfoId == null || reservationInfoId == 0L){
+			log.warn("user or reservationInfoId is null.");
+			return null;
+		}
+		ReservationInfo reservationInfo = reservationInfoRepository.findByReservationInfoIdAndUserNameAndDeletedFalse(
+			reservationInfoId, user);
+		if(reservationInfo == null){
+			log.warn("the reservation does not exist. user : {}, reservationInfoId : {}", user, reservationInfoId);
+			return null;
+		}
+		reservationInfo.setSignIn(true);
+		ReservationInfo saved = reservationInfoRepository.save(reservationInfo);
+		return reserveDtoTransferBuilder.toDto(saved);
 	}
 }
