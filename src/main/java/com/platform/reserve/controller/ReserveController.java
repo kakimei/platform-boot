@@ -111,4 +111,21 @@ public class ReserveController {
 		}
 		return null;
 	}
+
+	@RequestMapping(path = "/cancel", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+	public @ResponseBody
+	ReserveVO cancel(@RequestBody ReserveVO reserveVO, HttpServletRequest httpServletRequest) {
+		String user = (String) httpServletRequest.getAttribute("user");
+		Long reservationInfoId = reserveVO.getReservationInfoId();
+		if (StringUtils.isBlank(user) || reservationInfoId == null || reservationInfoId == 0) {
+			return null;
+		}
+		reserveVO.setUserName(user);
+		Request<ReserveVO> request = Request.<ReserveVO>builder().entity(reserveVO).build();
+		Response<ReserveVO> reserveVOResponse = reserveFacade.cancel(request);
+		if (reserveVOResponse.getResponseType().isSuccess()) {
+			return reserveVOResponse.getEntity();
+		}
+		return null;
+	}
 }

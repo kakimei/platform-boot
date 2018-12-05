@@ -17,4 +17,6 @@ public interface ReservationInfoService {
 	ReservationInfoDto singIn(String user, Long reservationInfoId);
 
 	List<ReservationInfoDto> findAllActiveReservationInfo();
+
+	ReservationInfoDto cancel(String user, Long reservationInfoId);
 }

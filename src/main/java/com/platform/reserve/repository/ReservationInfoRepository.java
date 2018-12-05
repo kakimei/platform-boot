@@ -15,7 +15,7 @@ public interface ReservationInfoRepository extends JpaRepository<ReservationInfo
 
 	List<ReservationInfo> findByLinkManNameAndDeletedFalse(String linkManName);
 
-	List<ReservationInfo> findByUserNameOrderByReservationInfoId(String userName);
+	List<ReservationInfo> findByUserNameAndDeletedFalseOrderByReservationInfoId(String userName);
 
 	List<ReservationInfo> findByDeletedFalse();
 }

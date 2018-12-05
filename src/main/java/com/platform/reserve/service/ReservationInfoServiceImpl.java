@@ -82,7 +82,7 @@ public class ReservationInfoServiceImpl implements ReservationInfoService{
 			log.warn("userName is null.");
 			return result;
 		}
-		List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByUserNameOrderByReservationInfoId(userName);
+		List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByUserNameAndDeletedFalseOrderByReservationInfoId(userName);
 		if(CollectionUtils.isEmpty(reservationInfoList)){
 			return result;
 		}
@@ -116,6 +116,24 @@ public class ReservationInfoServiceImpl implements ReservationInfoService{
 			return null;
 		}
 		reservationInfo.setSignIn(true);
+		ReservationInfo saved = reservationInfoRepository.save(reservationInfo);
+		return reserveDtoTransferBuilder.toDto(saved);
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED)
+	public ReservationInfoDto cancel(String user, Long reservationInfoId) {
+		if(StringUtils.isBlank(user) || reservationInfoId == null || reservationInfoId == 0L){
+			log.warn("user or reservationInfoId is null.");
+			return null;
+		}
+		ReservationInfo reservationInfo = reservationInfoRepository.findByReservationInfoIdAndUserNameAndDeletedFalse(
+			reservationInfoId, user);
+		if(reservationInfo == null){
+			log.warn("the reservation does not exist. user : {}, reservationInfoId : {}", user, reservationInfoId);
+			return null;
+		}
+		reservationInfo.setDeleted(true);
 		ReservationInfo saved = reservationInfoRepository.save(reservationInfo);
 		return reserveDtoTransferBuilder.toDto(saved);
 	}
