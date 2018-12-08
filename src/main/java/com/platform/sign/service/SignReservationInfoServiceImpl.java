@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -47,5 +48,16 @@ public class SignReservationInfoServiceImpl implements SignReservationInfoServic
 		List<SignReservationInfo> signReservationInfoList = signReservationInfoRepository.findByUserNameAndAndReservationInfoIdAndSignInTrue(
 			userName, reservationInfoId);
 		return !CollectionUtils.isEmpty(signReservationInfoList);
+	}
+
+	@Override
+	public List<SignReservationInfoDTO> getSignedListByUserName(String userName) {
+		List<SignReservationInfoDTO> result = new ArrayList<>();
+		List<SignReservationInfo> signReservationInfoList = signReservationInfoRepository.findByUserNameAndSignInTrue(userName);
+		if(CollectionUtils.isEmpty(signReservationInfoList)){
+			return result;
+		}
+		signReservationInfoList.forEach(signReservationInfo -> result.add(signReservationInfoDtoTransferBuilder.toDTO(signReservationInfo)));
+		return result;
 	}
 }

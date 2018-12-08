@@ -32,6 +32,8 @@ public class ReserveVO {
 	private Integer feedBack;
 	private List<Map.Entry<String, List<TimeResourceDto.TimeDTO>>> resourceList;
 	private Boolean hasSigned;
+	private Boolean inactiveTime;
+	private Boolean hasFeedback;
 
 	public boolean canReserve(){
 		if(StringUtils.isEmpty(this.linkManName)){

@@ -42,7 +42,7 @@ public class ReservationInfoDto {
 
 	private ActivityType activityType;
 
-	private FeedBackDto feedBackDto;
+	private Boolean hasFeedback;
 
 	private String userName;
 }

@@ -16,5 +16,5 @@ public class FeedBackVO {
 
 	private FeedBackType feedBackType;
 
-	private Integer count;
+	private String userName;
 }

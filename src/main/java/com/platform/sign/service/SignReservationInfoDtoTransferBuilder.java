@@ -30,4 +30,14 @@ public class SignReservationInfoDtoTransferBuilder {
 		BeanUtils.copyProperties(signReservationInfoVO, signReservationInfoDTO);
 		return signReservationInfoDTO;
 	}
+
+	public SignReservationInfoDTO toDTO(SignReservationInfo signReservationInfo){
+		if (signReservationInfo == null) {
+			log.warn("signReservationInfo is null");
+			return null;
+		}
+		SignReservationInfoDTO signReservationInfoDTO = new SignReservationInfoDTO();
+		BeanUtils.copyProperties(signReservationInfo, signReservationInfoDTO);
+		return signReservationInfoDTO;
+	}
 }

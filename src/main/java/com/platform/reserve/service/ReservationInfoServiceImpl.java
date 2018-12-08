@@ -1,5 +1,8 @@
 package com.platform.reserve.service;
 
+import com.platform.feedback.repository.FeedBackRepository;
+import com.platform.feedback.repository.entity.FeedBack;
+import com.platform.feedback.service.FeedBackService;
 import com.platform.reserve.repository.ReservationInfoRepository;
 import com.platform.reserve.repository.entity.ReservationInfo;
 import com.platform.reserve.service.dto.ReservationInfoDto;
@@ -26,6 +29,9 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
 
 	@Autowired
 	private ReserveDtoTransferBuilder reserveDtoTransferBuilder;
+
+	@Autowired
+	private FeedBackRepository feedBackRepository;
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
@@ -135,6 +141,27 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
 			return result;
 		}
 		reservationInfoList.forEach(reservationInfo -> result.add(reserveDtoTransferBuilder.toDto(reservationInfo)));
+		return result;
+	}
+
+	@Override
+	public List<ReservationInfoDto> findReservationInfoAndFeedbackByUserNameAndId(String userName, List<Long> reservationInfoIdList) {
+		List<ReservationInfoDto> result = new ArrayList<>();
+		if(CollectionUtils.isEmpty(reservationInfoIdList)){
+			return result;
+		}
+		List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByReservationInfoIdInAndDeletedFalse(
+			reservationInfoIdList);
+		if(CollectionUtils.isEmpty(reservationInfoList)){
+			return result;
+		}
+		reservationInfoList.forEach(reservationInfo -> {
+			ReservationInfoDto reservationInfoDto = reserveDtoTransferBuilder.toDto(reservationInfo);
+			List<FeedBack> feedBackList = feedBackRepository.findByUserNameAndReservationInfoId(userName,
+				reservationInfo.getReservationInfoId());
+			reservationInfoDto.setHasFeedback(!CollectionUtils.isEmpty(feedBackList));
+			result.add(reservationInfoDto);
+		});
 		return result;
 	}
 }

@@ -10,4 +10,6 @@ import java.util.List;
 public interface SignReservationInfoRepository extends JpaRepository<SignReservationInfo, Long> {
 
 	List<SignReservationInfo> findByUserNameAndAndReservationInfoIdAndSignInTrue(String userName, Long reservationInfoId);
+
+	List<SignReservationInfo> findByUserNameAndSignInTrue(String userName);
 }

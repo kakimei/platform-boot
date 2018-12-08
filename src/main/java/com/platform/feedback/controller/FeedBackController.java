@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping(value = "/feedback")
 public class FeedBackController {
@@ -18,8 +20,9 @@ public class FeedBackController {
 	private FeedBackFacade feedBackFacade;
 
 	@RequestMapping(value = "/thumbsUp", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-	public @ResponseBody Boolean thumbsUp(@RequestBody FeedBackVO feedBackVO){
-		Request<Long> request = Request.<Long>builder().entity(feedBackVO.getReservationInfoId()).build();
+	public @ResponseBody Boolean thumbsUp(@RequestBody FeedBackVO feedBackVO, HttpServletRequest httpServletRequest){
+		feedBackVO.setUserName((String)httpServletRequest.getAttribute("user"));
+		Request<FeedBackVO> request = Request.<FeedBackVO>builder().entity(feedBackVO).build();
 		feedBackFacade.thumbsUp(request);
 		return true;
 	}

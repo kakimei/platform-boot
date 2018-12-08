@@ -17,8 +17,10 @@ import com.platform.reserve.service.dto.ReservationInfoDto;
 import com.platform.resource.service.TimeResourceService;
 import com.platform.resource.service.dto.TimeResourceDto;
 import com.platform.sign.service.SignReservationInfoService;
+import com.platform.sign.service.dto.SignReservationInfoDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.mail.EmailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +29,8 @@ import org.springframework.util.CollectionUtils;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -141,6 +145,28 @@ public class ReserveFacade {
 		}
 	}
 
+	public Response<List<ReserveVO>> getReservationListBySignIn(Request<ReserveVO> request) {
+		ReserveVO reserveVO = request.getEntity();
+		List<ReserveVO> result = new ArrayList<>();
+		try {
+			List<SignReservationInfoDTO> signReservationInfoDTOList = signReservationInfoService.getSignedListByUserName(reserveVO.getUserName());
+			if (CollectionUtils.isEmpty(signReservationInfoDTOList)) {
+				return ReserveResponse.<List<ReserveVO>>builder().responseType(ResponseType.SUCCESS).entity(result).build();
+			}
+			List<Long> reservationInfoIdList = signReservationInfoDTOList.stream().map(
+				signReservationInfoDTO -> signReservationInfoDTO.getReservationInfoId()).collect(Collectors.toList());
+			List<ReservationInfoDto> reservationList = reservationInfoService.findReservationInfoAndFeedbackByUserNameAndId(reserveVO.getUserName(),
+				reservationInfoIdList);
+			if (!CollectionUtils.isEmpty(reservationList)) {
+				reservationList.forEach(reservationInfoDto -> result.add(reserveDtoTransferBuilder.toVO(reservationInfoDto)));
+			}
+			return ReserveResponse.<List<ReserveVO>>builder().responseType(ResponseType.SUCCESS).entity(result).build();
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			return ReserveResponse.<List<ReserveVO>>builder().responseType(ResponseType.FAIL).entity(result).build();
+		}
+	}
+
 	public Response<List<ReserveVO>> getActiveReservationList(String userName) {
 		List<ReserveVO> result = new ArrayList<>();
 		try {
@@ -148,11 +174,12 @@ public class ReserveFacade {
 			if (!CollectionUtils.isEmpty(reservationList)) {
 				reservationList.forEach(reservationInfoDto -> {
 					ReserveVO reserveVO = reserveDtoTransferBuilder.toVO(reservationInfoDto);
-					List<FeedBackDto> feedBackDtoList = feedBackService.findFeedBackByReservationInfoId(reserveVO.getReservationInfoId());
-					reserveVO.setFeedBack(
-						CollectionUtils.isEmpty(feedBackDtoList) ? 0 : feedBackDtoList.stream().mapToInt(FeedBackDto::getCount).sum());
 					reserveVO.setHasSigned(
 						signReservationInfoService.hasSignedByReservationInfoIdAndUserName(reservationInfoDto.getReservationInfoId(), userName));
+					Date reserveDay = reserveVO.getReserveDay();
+					LocalDate localDate = LocalDateTime.ofInstant(reserveDay.toInstant(), ZoneId.systemDefault()).toLocalDate();
+					LocalDate today = LocalDate.now();
+					reserveVO.setInactiveTime(localDate.isAfter(today));
 					result.add(reserveVO);
 				});
 			}

@@ -66,6 +66,25 @@ public class ReserveController {
 		return new ArrayList<>();
 	}
 
+	@RequestMapping(path = "/mySignInlist", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+	public @ResponseBody
+	List<ReserveVO> mySignInlist(HttpServletRequest httpServletRequest) {
+		String user = (String) httpServletRequest.getAttribute("user");
+		if (StringUtils.isBlank(user)) {
+			return new ArrayList<>();
+		}
+		ReserveVO entity = new ReserveVO();
+		entity.setUserName(user);
+		Request<ReserveVO> request = Request.<ReserveVO>builder().entity(entity).build();
+		Response<List<ReserveVO>> result = reserveFacade.getReservationListBySignIn(request);
+		if (result.getResponseType().isSuccess()) {
+			log.info("get reservation list success. username : {}", user);
+			return result.getEntity();
+		}
+		log.error("get reservation list failed. username : {}, cause : {}", user, result.getErrMsg());
+		return new ArrayList<>();
+	}
+
 	@RequestMapping(path = "/alllist", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
 	public @ResponseBody
 	List<ReserveVO> allList(HttpServletRequest httpServletRequest) {

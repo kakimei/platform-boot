@@ -20,4 +20,6 @@ public interface ReservationInfoService {
 	ReservationInfoDto cancel(String user, Long reservationInfoId);
 
 	List<ReservationInfoDto> findReservationInfoByDateAndTime(Date reserveDate, String timeString);
+
+	List<ReservationInfoDto> findReservationInfoAndFeedbackByUserNameAndId(String userName, List<Long> reservationInfoIdList);
 }
