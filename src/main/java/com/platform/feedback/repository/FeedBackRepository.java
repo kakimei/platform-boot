@@ -11,4 +11,6 @@ public interface FeedBackRepository extends JpaRepository<FeedBack, Long> {
 	FeedBack findByReservationInfoIdAndFeedBackType(Long reservationInfoId, FeedBackType feedBackType);
 
 	List<FeedBack> findByReservationInfoId(Long reservationInfoId);
+
+	List<FeedBack> findByUserNameAndReservationInfoId(String userName, Long reservationInfoId);
 }

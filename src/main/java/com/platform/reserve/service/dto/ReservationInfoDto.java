@@ -26,13 +26,17 @@ public class ReservationInfoDto {
 
 	private String phoneNumber;
 
-	private Date reserveBegin;
+	private Date reserveDate;
 
-	private Date reserveEnd;
+	private Integer reserveBeginHH;
+
+	private Integer reserveBeginMM;
+
+	private Integer reserveEndHH;
+
+	private Integer reserveEndMM;
 
 	private Integer peopleCount;
-
-	private Boolean signIn;
 
 	private Long activityId;
 

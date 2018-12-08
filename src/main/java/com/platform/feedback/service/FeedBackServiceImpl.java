@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
 @Service
 @Slf4j
 @Transactional(propagation = Propagation.REQUIRED)
-public class FeedBackServiceImpl implements FeedBackService{
+public class FeedBackServiceImpl implements FeedBackService {
 
 	@Autowired
 	private FeedBackRepository feedBackRepository;
@@ -26,34 +27,31 @@ public class FeedBackServiceImpl implements FeedBackService{
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void saveOrUpdate(FeedBackDto feedBackDto) {
-		if(feedBackDto == null){
+	public void save(FeedBackDto feedBackDto) {
+		if (feedBackDto == null || StringUtils.isEmpty(feedBackDto.getUserName())) {
 			log.warn("no feedback need to save.");
 			return;
 		}
 
-		FeedBack feedBack = feedBackRepository.findByReservationInfoIdAndFeedBackType(
-			feedBackDto.getReservationInfoId(), feedBackDto.getFeedBackType());
-		if (feedBack == null) {
-			feedBack = feedBackDtoTransferBuilder.toEntity(feedBackDto);
-			feedBack.setCount(1);
-			feedBackRepository.save(feedBack);
+		List<FeedBack> feedBackList = feedBackRepository.findByUserNameAndReservationInfoId(feedBackDto.getUserName(),
+			feedBackDto.getReservationInfoId());
+		if (!CollectionUtils.isEmpty(feedBackList)) {
+			log.warn("user {} has signed reservation {}, can not reserve again!", feedBackDto.getUserName(), feedBackDto.getReservationInfoId());
 			return;
 		}
-		feedBack.setCount(feedBack.getCount() + 1);
+		FeedBack feedBack = feedBackDtoTransferBuilder.toEntity(feedBackDto);
 		feedBackRepository.save(feedBack);
-
 	}
 
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS)
 	public List<FeedBackDto> findFeedBackByReservationInfoId(Long reservationInfoId) {
 		List<FeedBackDto> result = new ArrayList<>();
-		if(reservationInfoId == null){
+		if (reservationInfoId == null) {
 			return result;
 		}
 		List<FeedBack> feedBackList = feedBackRepository.findByReservationInfoId(reservationInfoId);
-		if(CollectionUtils.isEmpty(feedBackList)){
+		if (CollectionUtils.isEmpty(feedBackList)) {
 			return result;
 		}
 		feedBackList.forEach(feedBack -> result.add(feedBackDtoTransferBuilder.toDto(feedBack)));

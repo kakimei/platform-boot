@@ -1,4 +1,4 @@
-package com.platform.feedback.repository.entity;
+package com.platform.sign.repository.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,34 +8,31 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "feedback")
+@Table(name = "sign_reservation_info")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
 @Getter
-public class FeedBack {
+@Setter
+public class SignReservationInfo {
 
 	@Id
-	@Column(name = "feedback_id", unique = true)
+	@Column(name = "sign_reservation_info_id", unique = true)
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long feedbackId;
+	private Long signReservationInfoId;
 
-	@Column(name = "reservation_info_id")
+	@Column(name = "reservation_info_id", nullable = false)
 	private Long reservationInfoId;
-
-	@Column(name = "feed_back_type", nullable = false)
-	@Enumerated(value = EnumType.STRING)
-	private FeedBackType feedBackType;
 
 	@Column(name = "user_name", nullable = false)
 	private String userName;
+
+	@Column(name = "sign_in", nullable = false)
+	private Boolean signIn;
 }

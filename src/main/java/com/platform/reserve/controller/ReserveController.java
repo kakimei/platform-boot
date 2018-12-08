@@ -4,6 +4,7 @@ import com.platform.reserve.controller.vo.ReserveVO;
 import com.platform.facade.Request;
 import com.platform.facade.Response;
 import com.platform.reserve.facade.ReserveFacade;
+import com.platform.resource.service.dto.TimeResourceDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -66,8 +68,9 @@ public class ReserveController {
 
 	@RequestMapping(path = "/alllist", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
 	public @ResponseBody
-	List<ReserveVO> allList() {
-		Response<List<ReserveVO>> result = reserveFacade.getActiveReservationList();
+	List<ReserveVO> allList(HttpServletRequest httpServletRequest) {
+		String user = (String) httpServletRequest.getAttribute("user");
+		Response<List<ReserveVO>> result = reserveFacade.getActiveReservationList(user);
 		if (result.getResponseType().isSuccess()) {
 			log.info("get reservation list success.");
 			return result.getEntity();
@@ -95,23 +98,6 @@ public class ReserveController {
 		return null;
 	}
 
-	@RequestMapping(path = "/signin", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-	public @ResponseBody
-	ReserveVO signin(@RequestBody ReserveVO reserveVO, HttpServletRequest httpServletRequest) {
-		String user = (String) httpServletRequest.getAttribute("user");
-		Long reservationInfoId = reserveVO.getReservationInfoId();
-		if (StringUtils.isBlank(user) || reservationInfoId == null || reservationInfoId == 0) {
-			return null;
-		}
-		reserveVO.setUserName(user);
-		Request<ReserveVO> request = Request.<ReserveVO>builder().entity(reserveVO).build();
-		Response<ReserveVO> reserveVOResponse = reserveFacade.signIn(request);
-		if (reserveVOResponse.getResponseType().isSuccess()) {
-			return reserveVOResponse.getEntity();
-		}
-		return null;
-	}
-
 	@RequestMapping(path = "/cancel", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
 	public @ResponseBody
 	ReserveVO cancel(@RequestBody ReserveVO reserveVO, HttpServletRequest httpServletRequest) {
@@ -128,4 +114,15 @@ public class ReserveController {
 		}
 		return null;
 	}
+
+	@RequestMapping(path = "/validDateTime", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+	public @ResponseBody
+	List<Map.Entry<String, List<TimeResourceDto.TimeDTO>>> getValidDateTime() {
+		Response<ReserveVO> reserveVOResponse = reserveFacade.getValidDateTime();
+		if (reserveVOResponse.getResponseType().isSuccess()) {
+			return reserveVOResponse.getEntity().getResourceList();
+		}
+		return null;
+	}
+
 }

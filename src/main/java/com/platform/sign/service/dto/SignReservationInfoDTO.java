@@ -1,6 +1,5 @@
-package com.platform.feedback.service.dto;
+package com.platform.sign.service.dto;
 
-import com.platform.feedback.repository.entity.FeedBackType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,13 +9,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FeedBackDto {
+public class SignReservationInfoDTO {
 
 	private Long reservationInfoId;
 
-	private FeedBackType feedBackType;
-
-	private Integer count;
-
 	private String userName;
+
+	private Boolean signIn;
 }

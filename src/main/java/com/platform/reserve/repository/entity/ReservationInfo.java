@@ -43,20 +43,26 @@ public class ReservationInfo {
 	@Column(name = "phone_number")
 	private String phoneNumber;
 
-	@Column(name = "reserve_begin", nullable = false)
-	private Date reserveBegin;
+	@Column(name = "reserve_date", nullable = false)
+	private Date reserveDate;
 
-	@Column(name = "reserve_end", nullable = false)
-	private Date reserveEnd;
+	@Column(name = "reserve_begin_hour", nullable = false)
+	private Integer reserveBeginHH;
+
+	@Column(name = "reserve_begin_minute", nullable = false)
+	private Integer reserveBeginMM;
+
+	@Column(name = "reserve_end_hour", nullable = false)
+	private Integer reserveEndHH;
+
+	@Column(name = "reserve_end_minute", nullable = false)
+	private Integer reserveEndMM;
 
 	@Column(name = "people_count", nullable = false)
 	private Integer peopleCount;
 
 	@Column(name = "deleted", nullable = false)
 	private Boolean deleted = false;
-
-	@Column(name = "sign_in", nullable = false)
-	private Boolean signIn = false;
 
 	@Column(name = "activity_type", nullable = false)
 	@Enumerated(value = EnumType.STRING)

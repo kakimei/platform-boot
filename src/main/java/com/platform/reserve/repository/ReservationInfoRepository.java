@@ -4,6 +4,7 @@ import com.platform.reserve.repository.entity.ReservationInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -18,4 +19,7 @@ public interface ReservationInfoRepository extends JpaRepository<ReservationInfo
 	List<ReservationInfo> findByUserNameAndDeletedFalseOrderByReservationInfoId(String userName);
 
 	List<ReservationInfo> findByDeletedFalse();
+
+	List<ReservationInfo> findByReserveDateAndReserveBeginHHAndReserveBeginMMAndReserveEndHHAndReserveEndMMAndDeletedFalse(Date reserveDate,
+		Integer reserveBeginHH, Integer reserveBeginMM, Integer reserveEndHH, Integer reserveEndMM);
 }

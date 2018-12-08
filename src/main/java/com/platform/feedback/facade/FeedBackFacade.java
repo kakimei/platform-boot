@@ -37,6 +37,6 @@ public class FeedBackFacade {
 	private void thumbs(Long reservationInfoId, FeedBackType feedBackType){
 		FeedBackDto feedBackDto = FeedBackDto.builder().reservationInfoId(reservationInfoId).feedBackType(
 			feedBackDtoTransferBuilder.toFeedBackType(feedBackType)).build();
-		feedBackService.saveOrUpdate(feedBackDto);
+		feedBackService.save(feedBackDto);
 	}
 }

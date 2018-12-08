@@ -2,6 +2,7 @@ package com.platform.reserve.service;
 
 import com.platform.reserve.service.dto.ReservationInfoDto;
 
+import java.util.Date;
 import java.util.List;
 
 public interface ReservationInfoService {
@@ -14,9 +15,9 @@ public interface ReservationInfoService {
 
 	List<ReservationInfoDto> findReservationInfoByUser(String userName);
 
-	ReservationInfoDto singIn(String user, Long reservationInfoId);
-
 	List<ReservationInfoDto> findAllActiveReservationInfo();
 
 	ReservationInfoDto cancel(String user, Long reservationInfoId);
+
+	List<ReservationInfoDto> findReservationInfoByDateAndTime(Date reserveDate, String timeString);
 }

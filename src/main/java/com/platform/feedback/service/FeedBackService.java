@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface FeedBackService {
 
-	void saveOrUpdate(FeedBackDto feedBackDto);
+	void save(FeedBackDto feedBackDto);
 
 	List<FeedBackDto> findFeedBackByReservationInfoId(Long reservationInfoId);
 }

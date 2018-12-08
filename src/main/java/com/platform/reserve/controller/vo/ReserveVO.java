@@ -1,6 +1,6 @@
 package com.platform.reserve.controller.vo;
 
-import com.platform.feedback.controller.vo.FeedBackVO;
+import com.platform.resource.service.dto.TimeResourceDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,6 +10,8 @@ import org.springframework.util.StringUtils;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,14 +23,15 @@ public class ReserveVO {
 	private Sex sex;
 	private Integer age;
 	private String phoneNumber;
-	private Date reserveBegin;
-	private Date reserveEnd;
+	private Date reserveDay;
+	private String timeString;
 	private Integer peopleCount;
 	private ActivityType activityType;
 	private Integer peopleNumberThreshold = 10;
 	private String userName;
-	private Boolean signIn;
 	private Integer feedBack;
+	private List<Map.Entry<String, List<TimeResourceDto.TimeDTO>>> resourceList;
+	private Boolean hasSigned;
 
 	public boolean canReserve(){
 		if(StringUtils.isEmpty(this.linkManName)){
@@ -39,8 +42,8 @@ public class ReserveVO {
 			log.error("phoneNumber can not be null.");
 			return false;
 		}
-		if(reserveBegin == null || reserveEnd == null || reserveEnd.before(reserveBegin)){
-			log.error("reserve date can not be null or reserveEnd is before reserveBegin.");
+		if(reserveDay == null){
+			log.error("reserve date is null");
 			return false;
 		}
 		if(!todayBeforeCurrentDay()){
@@ -64,7 +67,7 @@ public class ReserveVO {
 
 	private boolean todayBeforeCurrentDay(){
 		LocalDate today = LocalDate.now();
-		LocalDate beginDate = reserveBegin.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate beginDate = reserveDay.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		return today.isBefore(beginDate);
 	}
 
