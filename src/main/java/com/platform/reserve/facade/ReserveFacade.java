@@ -92,12 +92,11 @@ public class ReserveFacade {
 			if (!CollectionUtils.isEmpty(reservationInfoDtoListDB)) {
 				throw new ReserveException("the date time has been reserved, Please choose another date time.");
 			}
-			mailService.sendMail(emailReceiver, emailSubject, buildEmailContent(reserveVO, emailContentPlatform), new SendMailCallback() {
-				@Override
-				public void execute() {
-					reservationInfoService.save(reserveDtoTransferBuilder.toDto(reserveVO));
-				}
-			});
+			if(!timeResourceService.isInValidTimeResource(reserveVO.getReserveDay(), reserveVO.getTimeString())){
+				throw new ReserveException("the date time is not valid, Please choose valid date time.");
+			}
+			mailService.sendMail(emailReceiver, emailSubject, buildEmailContent(reserveVO, emailContentPlatform),
+				() -> reservationInfoService.save(reserveDtoTransferBuilder.toDto(reserveVO)));
 		} catch (EmailException | ReserveException e) {
 			log.error(e.getMessage(), e);
 			return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.FAIL).entity(reserveVO).build();
@@ -215,7 +214,8 @@ public class ReserveFacade {
 		Map<String, List<TimeResourceDto.TimeDTO>> validMap = new HashMap<>();
 		for (Map.Entry<LocalDate, List<TimeResourceDto.TimeDTO>> entry : validDateMapWeek.entrySet()) {
 			String formatDateString = entry.getKey().format(DateTimeFormatter.ISO_DATE);
-			validMap.put(formatDateString, entry.getValue());
+			List<TimeResourceDto.TimeDTO> value = new ArrayList<>(entry.getValue());
+			validMap.put(formatDateString, value);
 		}
 
 		List<ReservationInfoDto> allActiveReservationInfo = reservationInfoService.findAllActiveReservationInfo();

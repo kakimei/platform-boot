@@ -5,20 +5,18 @@ import com.platform.reserve.repository.entity.ActivityType;
 import com.platform.reserve.repository.entity.ReservationInfo;
 import com.platform.reserve.repository.entity.Sex;
 import com.platform.reserve.service.dto.ReservationInfoDto;
+import com.platform.resource.service.TimeResourceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 @Slf4j
 public class ReserveDtoTransferBuilder {
 
-	private static final String TIME_FORMAT = "^(\\d+):(\\d+) ~ (\\d+):(\\d+)";
-
-	public static final Pattern TIME_PATTERN = Pattern.compile(TIME_FORMAT);
+	@Autowired
+	private TimeResourceService timeResourceService;
 
 	public ReservationInfoDto toDto(ReserveVO reserveVO) {
 		if (reserveVO == null) {
@@ -29,13 +27,11 @@ public class ReserveDtoTransferBuilder {
 		BeanUtils.copyProperties(reserveVO, reservationInfoDto);
 		reservationInfoDto.setActivityType(toActivityType(reserveVO.getActivityType()));
 		reservationInfoDto.setSex(toSex(reserveVO.getSex()));
-		Matcher m = TIME_PATTERN.matcher(reserveVO.getTimeString());
-		if (m.find()) {
-			reservationInfoDto.setReserveBeginHH(Integer.valueOf(m.group(1)));
-			reservationInfoDto.setReserveBeginMM(Integer.valueOf(m.group(2)));
-			reservationInfoDto.setReserveEndHH(Integer.valueOf(m.group(3)));
-			reservationInfoDto.setReserveEndMM(Integer.valueOf(m.group(4)));
-		}
+		reservationInfoDto.setReserveBeginHH(timeResourceService.getBeginHour(reserveVO.getTimeString()));
+		reservationInfoDto.setReserveBeginMM(timeResourceService.getBeginMinute(reserveVO.getTimeString()));
+		reservationInfoDto.setReserveEndHH(timeResourceService.getEndHour(reserveVO.getTimeString()));
+		reservationInfoDto.setReserveEndMM(timeResourceService.getEndMinute(reserveVO.getTimeString()));
+
 		reservationInfoDto.setReserveDate(reserveVO.getReserveDay());
 		return reservationInfoDto;
 	}
@@ -120,39 +116,12 @@ public class ReserveDtoTransferBuilder {
 		return result.toString();
 	}
 
-	public String buildFormatString(String timeString){
-		return buildTimeString(getBeginHour(timeString), getBeginMinute(timeString), getEndHour(timeString), getEndMinute(timeString));
+	public String buildFormatString(String timeString) {
+		return buildTimeString(
+			timeResourceService.getBeginHour(timeString),
+			timeResourceService.getBeginMinute(timeString),
+			timeResourceService.getEndHour(timeString),
+			timeResourceService.getEndMinute(timeString));
 	}
 
-	public Integer getBeginHour(String timeString) {
-		Matcher m = TIME_PATTERN.matcher(timeString);
-		if (m.find()) {
-			return Integer.valueOf(m.group(1));
-		}
-		return 0;
-	}
-
-	public Integer getBeginMinute(String timeString) {
-		Matcher m = TIME_PATTERN.matcher(timeString);
-		if (m.find()) {
-			return Integer.valueOf(m.group(2));
-		}
-		return 0;
-	}
-
-	public Integer getEndHour(String timeString) {
-		Matcher m = TIME_PATTERN.matcher(timeString);
-		if (m.find()) {
-			return Integer.valueOf(m.group(3));
-		}
-		return 0;
-	}
-
-	public Integer getEndMinute(String timeString) {
-		Matcher m = TIME_PATTERN.matcher(timeString);
-		if (m.find()) {
-			return Integer.valueOf(m.group(4));
-		}
-		return 0;
-	}
 }

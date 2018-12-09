@@ -2,10 +2,10 @@ package com.platform.reserve.service;
 
 import com.platform.feedback.repository.FeedBackRepository;
 import com.platform.feedback.repository.entity.FeedBack;
-import com.platform.feedback.service.FeedBackService;
 import com.platform.reserve.repository.ReservationInfoRepository;
 import com.platform.reserve.repository.entity.ReservationInfo;
 import com.platform.reserve.service.dto.ReservationInfoDto;
+import com.platform.resource.service.TimeResourceService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -32,6 +32,9 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
 
 	@Autowired
 	private FeedBackRepository feedBackRepository;
+
+	@Autowired
+	private TimeResourceService timeResourceService;
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
@@ -133,10 +136,10 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
 		List<ReservationInfoDto> result = new ArrayList<>();
 		List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByReserveDateAndReserveBeginHHAndReserveBeginMMAndReserveEndHHAndReserveEndMMAndDeletedFalse(
 			reserveDate,
-			reserveDtoTransferBuilder.getBeginHour(timeString),
-			reserveDtoTransferBuilder.getBeginMinute(timeString),
-			reserveDtoTransferBuilder.getEndHour(timeString),
-			reserveDtoTransferBuilder.getEndMinute(timeString));
+			timeResourceService.getBeginHour(timeString),
+			timeResourceService.getBeginMinute(timeString),
+			timeResourceService.getEndHour(timeString),
+			timeResourceService.getEndMinute(timeString));
 		if(CollectionUtils.isEmpty(reservationInfoList)){
 			return result;
 		}
