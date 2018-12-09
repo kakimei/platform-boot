@@ -125,9 +125,7 @@ public class ReserveFacade {
 			.replace(RESERVE_DAY, DateFormatUtils.format(reserveBegin, DATE_FORMAT))
 			.replace(SEX, sex.getDisplayName())
 			.replace(AGE, String.valueOf(age))
-			.replace(RESERVE_TIME, String.valueOf(reserveDtoTransferBuilder.getBeginHour(timeString)) + ":" + String.valueOf(
-				reserveDtoTransferBuilder.getBeginMinute(timeString)) + "~" + String.valueOf(reserveDtoTransferBuilder.getEndHour(timeString)) + ":"
-				+ String.valueOf(reserveDtoTransferBuilder.getEndMinute(timeString)));
+			.replace(RESERVE_TIME, reserveDtoTransferBuilder.buildFormatString(timeString));
 	}
 
 	public Response<List<ReserveVO>> getReservationListByUserName(Request<ReserveVO> request) {
