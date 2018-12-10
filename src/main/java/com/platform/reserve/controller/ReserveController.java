@@ -134,14 +134,23 @@ public class ReserveController {
 		return null;
 	}
 
-	@RequestMapping(path = "/validDateTime", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+	@RequestMapping(path = "/team/validDateTime", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
 	public @ResponseBody
-	List<Map.Entry<String, List<TimeResourceDto.TimeDTO>>> getValidDateTime() {
-		Response<ReserveVO> reserveVOResponse = reserveFacade.getValidDateTime();
+	List<Map.Entry<String, List<TimeResourceDto.TimeDTO>>> getTeamValidDateTime() {
+		Response<ReserveVO> reserveVOResponse = reserveFacade.getTeamValidDateTime();
 		if (reserveVOResponse.getResponseType().isSuccess()) {
 			return reserveVOResponse.getEntity().getResourceList();
 		}
 		return null;
 	}
 
+	@RequestMapping(path = "/single/validDateTime", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+	public @ResponseBody
+	List<Map.Entry<String, List<TimeResourceDto.TimeDTO>>> getSingleValidDateTime() {
+		Response<ReserveVO> reserveVOResponse = reserveFacade.getSingleValidDateTime();
+		if (reserveVOResponse.getResponseType().isSuccess()) {
+			return reserveVOResponse.getEntity().getResourceList();
+		}
+		return null;
+	}
 }

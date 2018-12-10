@@ -51,6 +51,10 @@ public class MetaInfo {
 	@Column(name = "times", nullable = false)
 	private Integer times;
 
+	@Column(name = "meta_type", nullable = false)
+	@Enumerated(value = EnumType.STRING)
+	private MetaType metaType;
+
 	@Column(name = "deleted", nullable = false)
 	private Boolean deleted;
 }

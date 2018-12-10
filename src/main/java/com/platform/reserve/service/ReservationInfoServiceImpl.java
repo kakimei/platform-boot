@@ -3,6 +3,7 @@ package com.platform.reserve.service;
 import com.platform.feedback.repository.FeedBackRepository;
 import com.platform.feedback.repository.entity.FeedBack;
 import com.platform.reserve.repository.ReservationInfoRepository;
+import com.platform.reserve.repository.entity.ActivityType;
 import com.platform.reserve.repository.entity.ReservationInfo;
 import com.platform.reserve.service.dto.ReservationInfoDto;
 import com.platform.resource.service.TimeResourceService;
@@ -105,6 +106,28 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
 	public List<ReservationInfoDto> findAllActiveReservationInfo() {
 		List<ReservationInfoDto> result = new ArrayList<>();
 		List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByDeletedFalse();
+		if (CollectionUtils.isEmpty(reservationInfoList)) {
+			return result;
+		}
+		reservationInfoList.forEach(reservationInfo -> result.add(reserveDtoTransferBuilder.toDto(reservationInfo)));
+		return result;
+	}
+
+	@Override
+	public List<ReservationInfoDto> findAllActiveTeamReservationInfo() {
+		List<ReservationInfoDto> result = new ArrayList<>();
+		List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByActivityTypeAndDeletedFalse(ActivityType.TEAM);
+		if (CollectionUtils.isEmpty(reservationInfoList)) {
+			return result;
+		}
+		reservationInfoList.forEach(reservationInfo -> result.add(reserveDtoTransferBuilder.toDto(reservationInfo)));
+		return result;
+	}
+
+	@Override
+	public List<ReservationInfoDto> findAllActiveSingleReservationInfo() {
+		List<ReservationInfoDto> result = new ArrayList<>();
+		List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByActivityTypeAndDeletedFalse(ActivityType.SINGLE);
 		if (CollectionUtils.isEmpty(reservationInfoList)) {
 			return result;
 		}

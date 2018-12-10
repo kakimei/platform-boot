@@ -17,6 +17,10 @@ public interface ReservationInfoService {
 
 	List<ReservationInfoDto> findAllActiveReservationInfo();
 
+	List<ReservationInfoDto> findAllActiveTeamReservationInfo();
+
+	List<ReservationInfoDto> findAllActiveSingleReservationInfo();
+
 	ReservationInfoDto cancel(String user, Long reservationInfoId);
 
 	List<ReservationInfoDto> findReservationInfoByDateAndTime(Date reserveDate, String timeString);

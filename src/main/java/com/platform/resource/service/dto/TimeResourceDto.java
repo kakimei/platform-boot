@@ -18,9 +18,13 @@ import java.util.Objects;
 @AllArgsConstructor
 public class TimeResourceDto implements Serializable {
 
-	private Map<LocalDate, List<TimeDTO>> validDateMapDay = new HashMap<>();
+	private Map<LocalDate, List<TimeDTO>> validDateMapDayForTEAM = new HashMap<>();
 
-	private Map<LocalDate, List<TimeDTO>> validDateMapWeek = new HashMap<>();
+	private Map<LocalDate, List<TimeDTO>> validDateMapDayForSINGLE = new HashMap<>();
+
+	private Map<LocalDate, List<TimeDTO>> validDateMapWeekForTEAM = new HashMap<>();
+
+	private Map<LocalDate, List<TimeDTO>> validDateMapWeekForSINGLE = new HashMap<>();
 
 	public static class TimeDTO implements Serializable{
 		private Integer beginHour;

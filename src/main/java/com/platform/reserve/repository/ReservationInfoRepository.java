@@ -1,5 +1,6 @@
 package com.platform.reserve.repository;
 
+import com.platform.reserve.repository.entity.ActivityType;
 import com.platform.reserve.repository.entity.ReservationInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -19,6 +20,8 @@ public interface ReservationInfoRepository extends JpaRepository<ReservationInfo
 	List<ReservationInfo> findByUserNameAndDeletedFalseOrderByReservationInfoId(String userName);
 
 	List<ReservationInfo> findByDeletedFalse();
+
+	List<ReservationInfo> findByActivityTypeAndDeletedFalse(ActivityType activityType);
 
 	List<ReservationInfo> findByReserveDateAndReserveBeginHHAndReserveBeginMMAndReserveEndHHAndReserveEndMMAndDeletedFalse(Date reserveDate,
 		Integer reserveBeginHH, Integer reserveBeginMM, Integer reserveEndHH, Integer reserveEndMM);
