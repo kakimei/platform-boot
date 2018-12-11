@@ -1,41 +1,52 @@
 package com.platform.wx.token;
 
-import org.apache.commons.codec.digest.DigestUtils;
+import com.platform.wx.token.vo.WxVO;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
+import java.io.IOException;
 
 @RestController
-@RequestMapping(path = "/token")
+@RequestMapping(path = "/weixin")
+@Slf4j
 public class TokenController {
 
-	private static final String TOKEN = "yangpu";
+	private static final String WEIXIN_ACCESS_TOKEN_URL = "https://api.weixin.qq.com/sns/oauth2/access_token";
 
-	@RequestMapping(path = "/confirm", method = RequestMethod.GET, produces = "text/plain; charset=utf-8")
-	public String confirmToken(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
-		// 微信加密签名
-		String signature = httpServletRequest.getParameter("signature");
-		// 随机字符串
-		String echostr = httpServletRequest.getParameter("echostr");
-		// 时间戳
-		String timestamp = httpServletRequest.getParameter("timestamp");
-		// 随机数
-		String nonce = httpServletRequest.getParameter("nonce");
+	private static final String WEIXIN_APP_ID = "wx22d16b90c898f61d";
 
-		String[] str = { TOKEN, timestamp, nonce };
-		Arrays.sort(str); // 字典序排序
-		String bigStr = str[0] + str[1] + str[2];
-		// SHA1加密
-		String digest = DigestUtils.sha1Hex(bigStr.getBytes()).toLowerCase();
+	private static final String WEIXIN_APP_SECRET = "ebf24940e789946ef53b05a70391c95b";
 
-		// 确认请求来至微信
-		if (digest.equals(signature)) {
-			return echostr;
+	private static final Integer RESPONSE_OK = 200;
+	@RequestMapping(path = "/userInfo/get", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+	public @ResponseBody
+	WxVO confirmToken(@RequestParam String code){
+		CloseableHttpClient httpCilent = HttpClients.createDefault();
+		String url = WEIXIN_ACCESS_TOKEN_URL + "?appid=" + WEIXIN_APP_ID + "&secret=" + WEIXIN_APP_SECRET + "&code=" + code + "&grant_type=authorization_code";
+		HttpGet httpGet = new HttpGet(url);
+		try {
+			HttpResponse httpResponse = httpCilent.execute(httpGet);
+			if(httpResponse.getStatusLine().getStatusCode() == RESPONSE_OK){
+				String srtResult = EntityUtils.toString(httpResponse.getEntity());
+				log.info(srtResult);
+			}
+		} catch (IOException e) {
+			log.error(e.getMessage());
+		}finally {
+			try {
+				httpCilent.close();
+			} catch (IOException e) {
+				log.error(e.getMessage());
+			}
 		}
-		return "";
+		return null;
 	}
 }
