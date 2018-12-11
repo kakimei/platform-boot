@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -26,7 +28,7 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS)
-	public String registerAndLogin(String userName) {
+	public void registerAndLogin(String userName) {
 		User dbUser = userRepository.findByUserNameAndActiveIsTrue(userName);
 		if(dbUser == null){
 			dbUser = new User();
@@ -35,17 +37,26 @@ public class UserServiceImpl implements UserService{
 			userRepository.save(dbUser);
 		}
 
-		String token = UUID.randomUUID().toString();
-		userCache.put(token, userName);
-		return token;
+		userCache.put(userName, userName);
 	}
 
 	@Override
-	public String check(String token) {
-		if(StringUtils.isBlank(token)){
+	public String check(String userName) {
+		if(StringUtils.isBlank(userName)){
 			return "";
 		}
-		String user = userCache.getIfPresent(token);
+		String user = null;
+		try {
+			user = userCache.get(userName, new Callable<String>() {
+				@Override
+				public String call() throws Exception {
+					User user = userRepository.findByUserNameAndActiveIsTrue(userName);
+					return user == null ? "" : user.getUserName();
+				}
+			});
+		} catch (ExecutionException e) {
+			log.error("cache error : {}", e.getMessage());
+		}
 		return user;
 	}
 

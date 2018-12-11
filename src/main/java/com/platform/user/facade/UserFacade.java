@@ -20,12 +20,8 @@ public class UserFacade {
 
 	public Response<UserVO> login(Request<UserVO> request){
 		UserVO userVO = request.getEntity();
-		String token = userService.registerAndLogin(userVO.getUserName());
-		if(StringUtils.isNotBlank(token)){
-			userVO.setToken(token);
-			return ReserveResponse.<UserVO>builder().responseType(ResponseType.SUCCESS).entity(userVO).build();
-		}
-		return ReserveResponse.<UserVO>builder().responseType(ResponseType.FAIL).entity(userVO).build();
+		userService.registerAndLogin(userVO.getUserName());
+		return ReserveResponse.<UserVO>builder().responseType(ResponseType.SUCCESS).entity(userVO).build();
 	}
 
 	public Response<UserVO> register(Request<UserVO> request){

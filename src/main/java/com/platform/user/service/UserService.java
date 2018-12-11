@@ -2,9 +2,9 @@ package com.platform.user.service;
 
 public interface UserService {
 
-	String registerAndLogin(String userName);
+	void registerAndLogin(String userName);
 
-	String check(String token);
+	String check(String userName);
 
 	void save(String userName, String password);
 }
