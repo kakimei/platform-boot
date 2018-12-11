@@ -44,10 +44,14 @@ public class TokenController {
 				String srtResult = EntityUtils.toString(httpResponse.getEntity());
 				JSONObject jsonObject = new JSONObject(srtResult);
 				String accessToken = jsonObject.getString("access_token");
+				log.info("access token : {}", accessToken);
 				String openId = jsonObject.getString("openid");
+				log.info("open id : {}", openId);
 				String userInfoUrl = WEIXIN_USER_INFO_URL + "?access_token=" + accessToken + "&openid=" + openId + "&lang=zh_CN";
 				httpResponse = httpCilent.execute(new HttpGet(userInfoUrl));
+				log.info("==========="+httpResponse.getEntity().toString());
 				srtResult = EntityUtils.toString(httpResponse.getEntity());
+				log.info("---------"+srtResult);
 				jsonObject = new JSONObject(srtResult);
 				return buildWxVO(jsonObject);
 			}
