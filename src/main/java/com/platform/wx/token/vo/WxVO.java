@@ -12,17 +12,13 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WxVO {
+	private String access_token;
+
+	private Integer expires_in;
+
+	private String refresh_token;
+
 	private String openid;
 
-	private String nickname;
-
-	private String sex;
-
-	private String province;
-
-	private String city;
-
-	private String country;
-
-	private String headimgurl;
+	private String scope;
 }

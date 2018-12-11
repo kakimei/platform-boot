@@ -29,10 +29,6 @@ public class TokenController {
 
 	private static final Integer RESPONSE_OK = 200;
 
-	private static final String WEIXIN_USER_INFO_URL = "https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN";
-
-	private static final String WEIXIN_REFRESH_ACCESS_TOKEN = "https://api.weixin.qq.com/sns/oauth2/refresh_token";
-
 	@RequestMapping(path = "/userInfo/get", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
 	public @ResponseBody
 	WxVO confirmToken(@RequestParam String code) {
@@ -46,16 +42,13 @@ public class TokenController {
 			if (httpResponse.getStatusLine().getStatusCode() == RESPONSE_OK) {
 				String srtResult = EntityUtils.toString(httpResponse.getEntity());
 				JSONObject jsonObject = new JSONObject(srtResult);
-				String accessToken = jsonObject.getString("access_token");
-				log.info("access token : {}", accessToken);
-				String openId = jsonObject.getString("openid");
-				log.info("open id : {}", openId);
-				String refreshAccessToken = jsonObject.getString("refresh_token");
-				httpResponse = requestAccessToken(httpCilent, accessToken, openId, refreshAccessToken);
-				srtResult = EntityUtils.toString(httpResponse.getEntity());
-				log.info("---------"+srtResult);
-				jsonObject = new JSONObject(srtResult);
-				return buildWxVO(jsonObject);
+				return WxVO.builder()
+					.openid(jsonObject.getString("openid"))
+					.access_token(jsonObject.getString("access_token"))
+					.expires_in(jsonObject.getInt("expires_in"))
+					.refresh_token(jsonObject.getString("refresh_token"))
+					.scope(jsonObject.getString("scope"))
+					.build();
 			}
 		} catch (IOException e) {
 			log.error(e.getMessage());
@@ -67,35 +60,5 @@ public class TokenController {
 			}
 		}
 		return null;
-	}
-
-	private WxVO buildWxVO(JSONObject jsonObject){
-		return WxVO.builder()
-			.openid(jsonObject.getString("openid"))
-			.nickname(jsonObject.getString("nickname"))
-			.sex(jsonObject.getString("sex"))
-			.province(jsonObject.getString("province"))
-			.city(jsonObject.getString("city"))
-			.country(jsonObject.getString("country"))
-			.headimgurl(jsonObject.getString("headimgurl"))
-			.build();
-	}
-
-	private HttpResponse requestAccessToken(CloseableHttpClient httpCilent, String accessToken, String openId, String refreshToken)
-		throws IOException {
-		String userInfoUrl = WEIXIN_USER_INFO_URL + "?access_token=" + accessToken + "&openid=" + openId + "&lang=zh_CN";
-		HttpResponse httpResponse = httpCilent.execute(new HttpGet(userInfoUrl));
-		log.info("==========="+httpResponse.getEntity().toString());
-		String srtResult = EntityUtils.toString(httpResponse.getEntity());
-		log.info("---------"+srtResult);
-		JSONObject jsonObject = new JSONObject(srtResult);
-		if(jsonObject.getInt("errcode") == 40001){
-			String refreshTokenUrl = WEIXIN_REFRESH_ACCESS_TOKEN + "?appid=" + WEIXIN_APP_ID + "&grant_type=refresh_token&refresh_token=" + refreshToken;
-			httpResponse = httpCilent.execute(new HttpGet(refreshTokenUrl));
-			srtResult = EntityUtils.toString(httpResponse.getEntity());
-			jsonObject = new JSONObject(srtResult);
-			return requestAccessToken(httpCilent, jsonObject.getString("access_token"), jsonObject.getString("openid"), jsonObject.getString("refresh_token"));
-		}
-		return httpResponse;
 	}
 }
