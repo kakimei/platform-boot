@@ -7,6 +7,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,7 +37,14 @@ public class TokenController {
 			HttpResponse httpResponse = httpCilent.execute(httpGet);
 			if(httpResponse.getStatusLine().getStatusCode() == RESPONSE_OK){
 				String srtResult = EntityUtils.toString(httpResponse.getEntity());
-				log.info(srtResult);
+				JSONObject jsonObject=new JSONObject(srtResult);
+				WxVO result = new WxVO();
+				result.setAccess_token(jsonObject.getString("access_token"));
+				result.setExpires_in(jsonObject.getString("expires_in"));
+				result.setOpenid(jsonObject.getString("openid"));
+				result.setRefresh_token(jsonObject.getString("refresh_token"));
+				result.setScope(jsonObject.getString("scope"));
+				return result;
 			}
 		} catch (IOException e) {
 			log.error(e.getMessage());
