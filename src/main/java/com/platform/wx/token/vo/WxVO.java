@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 public class WxVO {
 	private String access_token;
 
-	private String expires_in;
+	private Integer expires_in;
 
 	private String refresh_token;
 

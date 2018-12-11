@@ -40,7 +40,7 @@ public class TokenController {
 				JSONObject jsonObject=new JSONObject(srtResult);
 				WxVO result = new WxVO();
 				result.setAccess_token(jsonObject.getString("access_token"));
-				result.setExpires_in(jsonObject.getString("expires_in"));
+				result.setExpires_in(jsonObject.getInt("expires_in"));
 				result.setOpenid(jsonObject.getString("openid"));
 				result.setRefresh_token(jsonObject.getString("refresh_token"));
 				result.setScope(jsonObject.getString("scope"));
