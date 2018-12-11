@@ -31,12 +31,14 @@ public class TimeResourceDto implements Serializable {
 		private Integer beginMinute;
 		private Integer endHour;
 		private Integer endMinute;
+		private Integer times;
 
-		public TimeDTO(Integer beginHour, Integer beginMinute, Integer endHour, Integer endMinute) {
+		public TimeDTO(Integer beginHour, Integer beginMinute, Integer endHour, Integer endMinute, Integer times) {
 			this.beginHour = beginHour;
 			this.beginMinute = beginMinute;
 			this.endHour = endHour;
 			this.endMinute = endMinute;
+			this.times = times;
 		}
 
 		public Integer getBeginHour() {
@@ -71,6 +73,14 @@ public class TimeResourceDto implements Serializable {
 			this.endMinute = endMinute;
 		}
 
+		public Integer getTimes() {
+			return times;
+		}
+
+		public void setTimes(Integer times) {
+			this.times = times;
+		}
+
 		@Override
 		public boolean equals(Object o) {
 			if (this == o)
@@ -81,13 +91,14 @@ public class TimeResourceDto implements Serializable {
 			return Objects.equals(beginHour, timeDTO.beginHour) &&
 				Objects.equals(beginMinute, timeDTO.beginMinute) &&
 				Objects.equals(endHour, timeDTO.endHour) &&
-				Objects.equals(endMinute, timeDTO.endMinute);
+				Objects.equals(endMinute, timeDTO.endMinute) &&
+				Objects.equals(times, timeDTO.times);
 		}
 
 		@Override
 		public int hashCode() {
 
-			return Objects.hash(beginHour, beginMinute, endHour, endMinute);
+			return Objects.hash(beginHour, beginMinute, endHour, endMinute, times);
 		}
 	}
 }

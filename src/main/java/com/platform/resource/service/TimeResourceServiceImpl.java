@@ -21,7 +21,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,7 +43,6 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 	@Value("#{environment['valid.resource.time.offset']}")
 	private String dayOffset;
 
-
 	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
 
 	@Autowired
@@ -53,7 +51,8 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 	@Autowired
 	private ReservationInfoService reservationInfoService;
 
-	private static final Cache<String, TimeResourceDto> timeResourceCache = CacheBuilder.newBuilder().softValues().expireAfterWrite(1, TimeUnit.DAYS).build();
+	private static final Cache<String, TimeResourceDto> timeResourceCache = CacheBuilder.newBuilder().softValues().expireAfterWrite(1,
+		TimeUnit.DAYS).build();
 
 	private static final String TIME_RESOURCE = "TIME_RESOURCE";
 
@@ -69,11 +68,12 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 				LocalDate rangeStart = LocalDate.now().plusDays(Integer.valueOf(dayOffset));
 				LocalDate rangeEnd = rangeStart.plusMonths(Long.valueOf(monthRange));
 				List<MetaInfo> teamMetaInfoList = metaInfoRepository.findByMetaTypeAndDeletedFalse(MetaType.TEAM);
-				Map<IntervalUnit, List<MetaInfo>> teamIntervalUnitMap = teamMetaInfoList.stream().collect(Collectors.groupingBy(MetaInfo::getIntervalUnit));
-				for(Map.Entry<IntervalUnit, List<MetaInfo>> entry : teamIntervalUnitMap.entrySet()){
+				Map<IntervalUnit, List<MetaInfo>> teamIntervalUnitMap = teamMetaInfoList.stream().collect(
+					Collectors.groupingBy(MetaInfo::getIntervalUnit));
+				for (Map.Entry<IntervalUnit, List<MetaInfo>> entry : teamIntervalUnitMap.entrySet()) {
 					IntervalUnit intervalUnit = entry.getKey();
 					List<MetaInfo> metaInfos = entry.getValue();
-					switch (intervalUnit){
+					switch (intervalUnit) {
 						case DAY:
 							timeResourceDto.setValidDateMapDayForTEAM(buildDayResource(metaInfos, rangeStart, rangeEnd));
 							break;
@@ -84,11 +84,12 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 				}
 
 				List<MetaInfo> singleMetaInfoList = metaInfoRepository.findByMetaTypeAndDeletedFalse(MetaType.SINGLE);
-				Map<IntervalUnit, List<MetaInfo>> singleIntervalUnitMap = singleMetaInfoList.stream().collect(Collectors.groupingBy(MetaInfo::getIntervalUnit));
-				for(Map.Entry<IntervalUnit, List<MetaInfo>> entry : singleIntervalUnitMap.entrySet()){
+				Map<IntervalUnit, List<MetaInfo>> singleIntervalUnitMap = singleMetaInfoList.stream().collect(
+					Collectors.groupingBy(MetaInfo::getIntervalUnit));
+				for (Map.Entry<IntervalUnit, List<MetaInfo>> entry : singleIntervalUnitMap.entrySet()) {
 					IntervalUnit intervalUnit = entry.getKey();
 					List<MetaInfo> metaInfos = entry.getValue();
-					switch (intervalUnit){
+					switch (intervalUnit) {
 						case DAY:
 							timeResourceDto.setValidDateMapDayForSINGLE(buildDayResource(metaInfos, rangeStart, rangeEnd));
 							break;
@@ -105,20 +106,18 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 		return null;
 	}
 
-	private Map<LocalDate, List<TimeResourceDto.TimeDTO>> buildDayResource(List<MetaInfo> metaInfos, LocalDate rangeStart, LocalDate rangeEnd){
+	private Map<LocalDate, List<TimeResourceDto.TimeDTO>> buildDayResource(List<MetaInfo> metaInfos, LocalDate rangeStart, LocalDate rangeEnd) {
 		Map<LocalDate, List<TimeResourceDto.TimeDTO>> result = new HashMap<>();
 		LocalDate day = rangeStart;
-		while(day.isBefore(rangeEnd)){
+		while (day.isBefore(rangeEnd)) {
 			List<TimeResourceDto.TimeDTO> timeDTOList = new ArrayList<>();
-			for(MetaInfo metaInfo : metaInfos){
+			for (MetaInfo metaInfo : metaInfos) {
 				Integer times = metaInfo.getTimes();
-				for(int i = 0; i < times; i ++) {
-					Integer hourBegin = metaInfo.getHourBegin();
-					Integer minuteBegin = metaInfo.getMinuteBegin();
-					Integer hourEnd = metaInfo.getHourEnd();
-					Integer minuteEnd = metaInfo.getMinuteEnd();
-					timeDTOList.add(new TimeResourceDto.TimeDTO(hourBegin, minuteBegin, hourEnd, minuteEnd));
-				}
+				Integer hourBegin = metaInfo.getHourBegin();
+				Integer minuteBegin = metaInfo.getMinuteBegin();
+				Integer hourEnd = metaInfo.getHourEnd();
+				Integer minuteEnd = metaInfo.getMinuteEnd();
+				timeDTOList.add(new TimeResourceDto.TimeDTO(hourBegin, minuteBegin, hourEnd, minuteEnd, times));
 			}
 			result.put(day, timeDTOList);
 			day = day.plusDays(1);
@@ -126,56 +125,63 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 		return result;
 	}
 
-	private Map<LocalDate, List<TimeResourceDto.TimeDTO>> buildWeekResource(List<MetaInfo> metaInfos, LocalDate rangeStart, LocalDate rangeEnd){
+	private Map<LocalDate, List<TimeResourceDto.TimeDTO>> buildWeekResource(List<MetaInfo> metaInfos, LocalDate rangeStart, LocalDate rangeEnd) {
 		Map<LocalDate, List<TimeResourceDto.TimeDTO>> result = new HashMap<>();
-		for(MetaInfo metaInfo : metaInfos) {
+		for (MetaInfo metaInfo : metaInfos) {
 			Integer times = metaInfo.getTimes();
-			for(int i = 0; i < times; i++) {
-				LocalDate day = rangeStart;
-				DayOfWeek dayOfWeek = day.getDayOfWeek();
-				int d = dayOfWeek.getValue();
-				Integer day1 = metaInfo.getDay();
-				int offset = (d <= day1 ? (day1 - d) : (day1 + 7 - d));
-				day = rangeStart.plusDays(offset);
-				while (day.isBefore(rangeEnd)) {
-					if (result.get(day) == null) {
-						result.put(day, new ArrayList<>());
-					}
-					Integer hourBegin = metaInfo.getHourBegin();
-					Integer minuteBegin = metaInfo.getMinuteBegin();
-					Integer hourEnd = metaInfo.getHourEnd();
-					Integer minuteEnd = metaInfo.getMinuteEnd();
-					result.get(day).add(new TimeResourceDto.TimeDTO(hourBegin, minuteBegin, hourEnd, minuteEnd));
-					day = day.plusDays(7);
+			LocalDate day = rangeStart;
+			DayOfWeek dayOfWeek = day.getDayOfWeek();
+			int d = dayOfWeek.getValue();
+			Integer day1 = metaInfo.getDay();
+			int offset = (d <= day1 ? (day1 - d) : (day1 + 7 - d));
+			day = rangeStart.plusDays(offset);
+			while (day.isBefore(rangeEnd)) {
+				if (result.get(day) == null) {
+					result.put(day, new ArrayList<>());
 				}
+				Integer hourBegin = metaInfo.getHourBegin();
+				Integer minuteBegin = metaInfo.getMinuteBegin();
+				Integer hourEnd = metaInfo.getHourEnd();
+				Integer minuteEnd = metaInfo.getMinuteEnd();
+				result.get(day).add(new TimeResourceDto.TimeDTO(hourBegin, minuteBegin, hourEnd, minuteEnd, times));
+				day = day.plusDays(7);
 			}
 		}
 		return result;
 	}
 
+	private Boolean containsTime(List<TimeResourceDto.TimeDTO> timeDTOList, Integer beginHour, Integer beginMinute, Integer endHour,
+		Integer endMinute, Integer times) {
+		for (TimeResourceDto.TimeDTO timeDTO : timeDTOList) {
+			if (timeDTO.getBeginHour() == beginHour && timeDTO.getBeginMinute() == beginMinute && timeDTO.getEndHour() == endHour
+				&& timeDTO.getEndMinute() == endMinute && timeDTO.getTimes() >= times) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	@Override
 	public Boolean isInValidTimeResource(Date reserveDate, String timeString, MetaType metaType, Integer peopleCount) {
-		if(reserveDate == null || StringUtils.isBlank(timeString)){
+		if (reserveDate == null || StringUtils.isBlank(timeString)) {
 			log.warn("reserve date is null or time string is null");
 			return false;
 		}
-		TimeResourceDto.TimeDTO timeDTO = new TimeResourceDto.TimeDTO(
-			getBeginHour(timeString),
-			getBeginMinute(timeString),
-			getEndHour(timeString),
-			getEndMinute(timeString));
+
 		String dateString = SDF.format(reserveDate);
-		if(MetaType.TEAM.equals(metaType)) {
+		if (MetaType.TEAM.equals(metaType)) {
 			List<Map.Entry<String, List<TimeResourceDto.TimeDTO>>> teamValidTimeResource = getTeamValidTimeResource();
-			for(Map.Entry<String, List<TimeResourceDto.TimeDTO>> entry : teamValidTimeResource){
-				if(dateString.equals(entry.getKey()) && entry.getValue().contains(timeDTO)){
+			for (Map.Entry<String, List<TimeResourceDto.TimeDTO>> entry : teamValidTimeResource) {
+				if (dateString.equals(entry.getKey()) && containsTime(entry.getValue(), getBeginHour(timeString), getBeginMinute(timeString),
+					getEndHour(timeString), getEndMinute(timeString), 1)) {
 					return true;
 				}
 			}
-		}else{
+		} else {
 			List<Map.Entry<String, List<TimeResourceDto.TimeDTO>>> singleValidTimeResource = getSingleValidTimeResource();
-			for(Map.Entry<String, List<TimeResourceDto.TimeDTO>> entry : singleValidTimeResource){
-				if(dateString.equals(entry.getKey()) && entry.getValue().contains(timeDTO) && Collections.frequency(entry.getValue(), timeDTO) >= peopleCount){
+			for (Map.Entry<String, List<TimeResourceDto.TimeDTO>> entry : singleValidTimeResource) {
+				if (dateString.equals(entry.getKey()) && containsTime(entry.getValue(), getBeginHour(timeString), getBeginMinute(timeString),
+					getEndHour(timeString), getEndMinute(timeString), peopleCount)) {
 					return true;
 				}
 			}
@@ -256,31 +262,49 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 		return sortedList;
 	}
 
-	private void removeReservedDateTimeFromMap(List<ReservationInfoDto> reservedList, Map<String, List<TimeResourceDto.TimeDTO>> map, MetaType metaType){
+	private void removeReservedDateTimeFromMap(List<ReservationInfoDto> reservedList, Map<String, List<TimeResourceDto.TimeDTO>> map,
+		MetaType metaType) {
 		for (ReservationInfoDto reservationInfoDto : reservedList) {
 			List<TimeResourceDto.TimeDTO> timeDTOList = map.get(SDF.format(reservationInfoDto.getReserveDate()));
 			if (CollectionUtils.isEmpty(timeDTOList)) {
 				continue;
 			}
-			TimeResourceDto.TimeDTO timeDTO = new TimeResourceDto.TimeDTO(reservationInfoDto.getReserveBeginHH(),
-				reservationInfoDto.getReserveBeginMM(),
-				reservationInfoDto.getReserveEndHH(), reservationInfoDto.getReserveEndMM());
-			if(MetaType.SINGLE.equals(metaType)) {
+
+			if (MetaType.SINGLE.equals(metaType)) {
 				Integer peopleCount = reservationInfoDto.getPeopleCount();
-				for(int i = 0; i < peopleCount; i++) {
-					timeDTOList.remove(timeDTO);
-				}
-			}else{
-				timeDTOList.remove(timeDTO);
+				timeDTOList = calculateTimeList(timeDTOList, reservationInfoDto.getReserveBeginHH(), reservationInfoDto.getReserveBeginMM(),
+					reservationInfoDto.getReserveEndHH(), reservationInfoDto.getReserveEndMM(), peopleCount);
+			} else {
+				timeDTOList = calculateTimeList(timeDTOList, reservationInfoDto.getReserveBeginHH(), reservationInfoDto.getReserveBeginMM(),
+					reservationInfoDto.getReserveEndHH(), reservationInfoDto.getReserveEndMM(), 1);
 			}
 			if (CollectionUtils.isEmpty(timeDTOList)) {
 				map.remove(SDF.format(reservationInfoDto.getReserveDate()));
+			}else{
+				map.put(SDF.format(reservationInfoDto.getReserveDate()), timeDTOList);
 			}
 		}
 	}
 
-	private void filterDuplicate(Map<String, List<TimeResourceDto.TimeDTO>> map){
-		for(Map.Entry<String, List<TimeResourceDto.TimeDTO>> entry : map.entrySet()){
+	private List<TimeResourceDto.TimeDTO> calculateTimeList(List<TimeResourceDto.TimeDTO> timeDTOList, Integer beginHour, Integer beginMinute, Integer endHour,
+		Integer endMinute, Integer times) {
+		List<TimeResourceDto.TimeDTO> result = new ArrayList<>();
+		for (TimeResourceDto.TimeDTO timeDTO : timeDTOList) {
+			if (timeDTO.getBeginHour() == beginHour && timeDTO.getBeginMinute() == beginMinute && timeDTO.getEndHour() == endHour
+				&& timeDTO.getEndMinute() == endMinute) {
+				Integer remainTimes = timeDTO.getTimes() - times;
+				if(remainTimes <= 0){
+					continue;
+				}
+				timeDTO.setTimes(remainTimes);
+			}
+			result.add(timeDTO);
+		}
+		return result;
+	}
+
+	private void filterDuplicate(Map<String, List<TimeResourceDto.TimeDTO>> map) {
+		for (Map.Entry<String, List<TimeResourceDto.TimeDTO>> entry : map.entrySet()) {
 			List<TimeResourceDto.TimeDTO> list = entry.getValue();
 			Set<TimeResourceDto.TimeDTO> timeDTOSet = list.stream().collect(Collectors.toSet());
 			list.clear();
