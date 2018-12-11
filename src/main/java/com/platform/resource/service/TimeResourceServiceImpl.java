@@ -238,7 +238,6 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 		}
 		List<ReservationInfoDto> allActiveReservationInfo = reservationInfoService.findAllActiveTeamReservationInfo();
 		removeReservedDateTimeFromMap(allActiveReservationInfo, validMap, MetaType.TEAM);
-		filterDuplicate(validMap);
 		List<Map.Entry<String, List<TimeResourceDto.TimeDTO>>> sortedList = validMap.entrySet().stream().sorted(
 			(Comparator.comparing(Map.Entry::getKey))).collect(Collectors.toList());
 		return sortedList;
@@ -256,7 +255,6 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 		}
 		List<ReservationInfoDto> allActiveReservationInfo = reservationInfoService.findAllActiveSingleReservationInfo();
 		removeReservedDateTimeFromMap(allActiveReservationInfo, validMap, MetaType.SINGLE);
-		filterDuplicate(validMap);
 		List<Map.Entry<String, List<TimeResourceDto.TimeDTO>>> sortedList = validMap.entrySet().stream().sorted(
 			(Comparator.comparing(Map.Entry::getKey))).collect(Collectors.toList());
 		return sortedList;
@@ -301,14 +299,5 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 			result.add(timeDTO);
 		}
 		return result;
-	}
-
-	private void filterDuplicate(Map<String, List<TimeResourceDto.TimeDTO>> map) {
-		for (Map.Entry<String, List<TimeResourceDto.TimeDTO>> entry : map.entrySet()) {
-			List<TimeResourceDto.TimeDTO> list = entry.getValue();
-			Set<TimeResourceDto.TimeDTO> timeDTOSet = list.stream().collect(Collectors.toSet());
-			list.clear();
-			list.addAll(timeDTOSet);
-		}
 	}
 }
