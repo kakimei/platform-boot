@@ -24,7 +24,7 @@ public class UserController {
 	@RequestMapping(path = "/login", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
 	public @ResponseBody
 	UserVO login(@RequestBody UserVO userVO) {
-		if (userVO == null || StringUtils.isBlank(userVO.getUserName()) || StringUtils.isBlank(userVO.getPassword())) {
+		if (userVO == null || StringUtils.isBlank(userVO.getUserName())) {
 			return userVO;
 		}
 		Request<UserVO> request = Request.<UserVO>builder().entity(userVO).build();

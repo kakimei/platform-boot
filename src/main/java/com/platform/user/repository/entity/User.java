@@ -30,7 +30,7 @@ public class User {
 	@Column(name = "user_name", nullable = false)
 	private String userName;
 
-	@Column(name = "password", nullable = false)
+	@Column(name = "password", nullable = true)
 	private String password;
 
 	@Column(name = "active", nullable = false, columnDefinition = "BIT")

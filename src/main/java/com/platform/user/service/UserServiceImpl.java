@@ -26,16 +26,15 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS)
-	public String login(String userName, String password) {
+	public String registerAndLogin(String userName) {
 		User dbUser = userRepository.findByUserNameAndActiveIsTrue(userName);
 		if(dbUser == null){
-			log.info("login failed, user does not exist. user name : {}", userName);
-			return null;
+			dbUser = new User();
+			dbUser.setUserName(userName);
+			dbUser.setActive(true);
+			userRepository.save(dbUser);
 		}
-		if(!dbUser.getPassword().equals(password)){
-			log.info("login failed, password is not correct. user name : {}", userName);
-			return null;
-		}
+
 		String token = UUID.randomUUID().toString();
 		userCache.put(token, userName);
 		return token;

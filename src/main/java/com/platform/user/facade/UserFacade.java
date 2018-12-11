@@ -20,7 +20,7 @@ public class UserFacade {
 
 	public Response<UserVO> login(Request<UserVO> request){
 		UserVO userVO = request.getEntity();
-		String token = userService.login(userVO.getUserName(), userVO.getPassword());
+		String token = userService.registerAndLogin(userVO.getUserName());
 		if(StringUtils.isNotBlank(token)){
 			userVO.setToken(token);
 			return ReserveResponse.<UserVO>builder().responseType(ResponseType.SUCCESS).entity(userVO).build();
