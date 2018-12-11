@@ -21,6 +21,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -153,7 +154,7 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 	}
 
 	@Override
-	public Boolean isInValidTimeResource(Date reserveDate, String timeString, MetaType metaType) {
+	public Boolean isInValidTimeResource(Date reserveDate, String timeString, MetaType metaType, Integer peopleCount) {
 		if(reserveDate == null || StringUtils.isBlank(timeString)){
 			log.warn("reserve date is null or time string is null");
 			return false;
@@ -174,7 +175,7 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 		}else{
 			List<Map.Entry<String, List<TimeResourceDto.TimeDTO>>> singleValidTimeResource = getSingleValidTimeResource();
 			for(Map.Entry<String, List<TimeResourceDto.TimeDTO>> entry : singleValidTimeResource){
-				if(dateString.equals(entry.getKey()) && entry.getValue().contains(timeDTO)){
+				if(dateString.equals(entry.getKey()) && entry.getValue().contains(timeDTO) && Collections.frequency(entry.getValue(), timeDTO) >= peopleCount){
 					return true;
 				}
 			}

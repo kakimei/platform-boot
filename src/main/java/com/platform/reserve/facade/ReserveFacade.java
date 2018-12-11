@@ -73,7 +73,7 @@ public class ReserveFacade {
 	public Response<ReserveVO> reserve(Request<ReserveVO> request) {
 		ReserveVO reserveVO = request.getEntity();
 		try {
-			if(!timeResourceService.isInValidTimeResource(reserveVO.getReserveDay(), reserveVO.getTimeString(), MetaType.valueOf(reserveVO.getActivityType().name()))){
+			if(!timeResourceService.isInValidTimeResource(reserveVO.getReserveDay(), reserveVO.getTimeString(), MetaType.valueOf(reserveVO.getActivityType().name()), reserveVO.getPeopleCount())){
 				throw new ReserveException("the date time is not valid, Please choose valid date time.");
 			}
 			mailService.sendMail(emailReceiver, emailSubject, buildEmailContent(reserveVO, emailContentPlatform),

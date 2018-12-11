@@ -15,7 +15,7 @@ public interface TimeResourceService {
 
 	List<Map.Entry<String, List<TimeResourceDto.TimeDTO>>> getSingleValidTimeResource();
 
-	Boolean isInValidTimeResource(Date reserveDate, String timeString, MetaType metaType);
+	Boolean isInValidTimeResource(Date reserveDate, String timeString, MetaType metaType, Integer peopleCount);
 
 	Integer getBeginHour(String timeString);
 
