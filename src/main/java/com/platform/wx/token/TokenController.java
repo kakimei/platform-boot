@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.io.IOException;
 
 @RestController
@@ -27,28 +28,32 @@ public class TokenController {
 	private static final String WEIXIN_APP_SECRET = "ebf24940e789946ef53b05a70391c95b";
 
 	private static final Integer RESPONSE_OK = 200;
+
+	private static final String WEIXIN_USER_INFO_URL = "https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN";
 	@RequestMapping(path = "/userInfo/get", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
 	public @ResponseBody
-	WxVO confirmToken(@RequestParam String code){
+	WxVO confirmToken(@RequestParam String code) {
 		CloseableHttpClient httpCilent = HttpClients.createDefault();
-		String url = WEIXIN_ACCESS_TOKEN_URL + "?appid=" + WEIXIN_APP_ID + "&secret=" + WEIXIN_APP_SECRET + "&code=" + code + "&grant_type=authorization_code";
-		HttpGet httpGet = new HttpGet(url);
+		String accessTokenRrl =
+			WEIXIN_ACCESS_TOKEN_URL + "?appid=" + WEIXIN_APP_ID + "&secret=" + WEIXIN_APP_SECRET + "&code=" + code + "&grant_type=authorization_code";
+
+		HttpGet httpGet = new HttpGet(accessTokenRrl);
 		try {
 			HttpResponse httpResponse = httpCilent.execute(httpGet);
-			if(httpResponse.getStatusLine().getStatusCode() == RESPONSE_OK){
+			if (httpResponse.getStatusLine().getStatusCode() == RESPONSE_OK) {
 				String srtResult = EntityUtils.toString(httpResponse.getEntity());
-				JSONObject jsonObject=new JSONObject(srtResult);
-				WxVO result = new WxVO();
-				result.setAccess_token(jsonObject.getString("access_token"));
-				result.setExpires_in(jsonObject.getInt("expires_in"));
-				result.setOpenid(jsonObject.getString("openid"));
-				result.setRefresh_token(jsonObject.getString("refresh_token"));
-				result.setScope(jsonObject.getString("scope"));
-				return result;
+				JSONObject jsonObject = new JSONObject(srtResult);
+				String accessToken = jsonObject.getString("access_token");
+				String openId = jsonObject.getString("openid");
+				String userInfoUrl = WEIXIN_USER_INFO_URL + "?access_token=" + accessToken + "&openid=" + openId + "&lang=zh_CN";
+				httpResponse = httpCilent.execute(new HttpGet(userInfoUrl));
+				srtResult = EntityUtils.toString(httpResponse.getEntity());
+				jsonObject = new JSONObject(srtResult);
+				return buildWxVO(jsonObject);
 			}
 		} catch (IOException e) {
 			log.error(e.getMessage());
-		}finally {
+		} finally {
 			try {
 				httpCilent.close();
 			} catch (IOException e) {
@@ -56,5 +61,17 @@ public class TokenController {
 			}
 		}
 		return null;
+	}
+
+	private WxVO buildWxVO(JSONObject jsonObject){
+		return WxVO.builder()
+			.openid(jsonObject.getString("openid"))
+			.nickname(jsonObject.getString("nickname"))
+			.sex(jsonObject.getString("sex"))
+			.province(jsonObject.getString("province"))
+			.city(jsonObject.getString("city"))
+			.country(jsonObject.getString("country"))
+			.headimgurl(jsonObject.getString("headimgurl"))
+			.build();
 	}
 }
