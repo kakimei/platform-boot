@@ -25,7 +25,7 @@ public class LoginFilter implements Filter {
 
 	private static final String LOGIN_URI = "/platform/user/login";
 	private static final String REGISTER_URI = "/platform/user/register";
-	private static final String WX_TOKEN = "/platform/token/confirm";
+	private static final String WX_TOKEN = "/platform/weixin/userInfo/get";
 	@Autowired
 	private UserService userService;
 
