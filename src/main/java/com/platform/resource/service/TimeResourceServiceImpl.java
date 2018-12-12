@@ -278,25 +278,28 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 			}
 			if (CollectionUtils.isEmpty(timeDTOList)) {
 				map.remove(SDF.format(reservationInfoDto.getReserveDate()));
-			}else{
+			} else {
 				map.put(SDF.format(reservationInfoDto.getReserveDate()), timeDTOList);
 			}
 		}
 	}
 
-	private List<TimeResourceDto.TimeDTO> calculateTimeList(List<TimeResourceDto.TimeDTO> timeDTOList, Integer beginHour, Integer beginMinute, Integer endHour,
+	private List<TimeResourceDto.TimeDTO> calculateTimeList(List<TimeResourceDto.TimeDTO> timeDTOList, Integer beginHour, Integer beginMinute,
+		Integer endHour,
 		Integer endMinute, Integer times) {
 		List<TimeResourceDto.TimeDTO> result = new ArrayList<>();
 		for (TimeResourceDto.TimeDTO timeDTO : timeDTOList) {
-			if (timeDTO.getBeginHour() == beginHour && timeDTO.getBeginMinute() == beginMinute && timeDTO.getEndHour() == endHour
-				&& timeDTO.getEndMinute() == endMinute) {
-				Integer remainTimes = timeDTO.getTimes() - times;
-				if(remainTimes <= 0){
+			TimeResourceDto.TimeDTO timeDTO1 = new TimeResourceDto.TimeDTO(timeDTO.getBeginHour(), timeDTO.getBeginMinute(), timeDTO.getEndHour(),
+				timeDTO.getEndMinute(), timeDTO.getTimes());
+			if (timeDTO1.getBeginHour() == beginHour && timeDTO1.getBeginMinute() == beginMinute && timeDTO1.getEndHour() == endHour
+				&& timeDTO1.getEndMinute() == endMinute) {
+				Integer remainTimes = timeDTO1.getTimes() - times;
+				if (remainTimes <= 0) {
 					continue;
 				}
-				timeDTO.setTimes(remainTimes);
+				timeDTO1.setTimes(remainTimes);
 			}
-			result.add(timeDTO);
+			result.add(timeDTO1);
 		}
 		return result;
 	}
