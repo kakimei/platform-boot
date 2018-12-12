@@ -27,7 +27,7 @@ public class ReserveVO {
 	private String timeString;
 	private Integer peopleCount;
 	private ActivityType activityType;
-	private Integer peopleNumberThreshold = 10;
+	private Integer peopleNumberThreshold = 15;
 	private String userName;
 	private Integer feedBack;
 	private List<Map.Entry<String, List<TimeResourceDto.TimeDTO>>> resourceList;
