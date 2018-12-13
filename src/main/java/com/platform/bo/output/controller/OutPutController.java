@@ -35,11 +35,11 @@ public class OutPutController {
 	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
 	@RequestMapping(path = "/reservation/excel/date", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
 	public void outputExcel(@RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date reserveDate, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-//		String boUserName = (String) httpServletRequest.getAttribute("boUser");
-//		BoUser boUser = boUserService.findByName(boUserName);
-//		if (!boUser.getRoleType().canDownloadReservation()) {
-//			return;
-//		}
+		String boUserName = (String) httpServletRequest.getAttribute("boUser");
+		BoUser boUser = boUserService.findByName(boUserName);
+		if (!boUser.getRoleType().canDownloadReservation()) {
+			return;
+		}
 		if (reserveDate == null) {
 			return;
 		}
