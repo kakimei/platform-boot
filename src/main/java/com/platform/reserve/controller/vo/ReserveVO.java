@@ -5,10 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +50,7 @@ public class ReserveVO {
 			log.error("reserve date is null");
 			return false;
 		}
+		reserveDay = DateUtils.truncate(reserveDay, Calendar.DATE);
 		if(!todayBeforeCurrentDay()){
 			log.error("can not reserve because reserve begin date is after today.");
 			return false;

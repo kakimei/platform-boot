@@ -91,7 +91,7 @@ public class ReserveDtoTransferBuilder {
 		return reserveVO;
 	}
 
-	private String buildTimeString(Integer beginHour, Integer beginMinute, Integer endHour, Integer endMinute) {
+	public String buildTimeString(Integer beginHour, Integer beginMinute, Integer endHour, Integer endMinute) {
 		StringBuffer result = new StringBuffer();
 		if (String.valueOf(beginHour).length() == 1) {
 			result.append("0").append(beginHour);

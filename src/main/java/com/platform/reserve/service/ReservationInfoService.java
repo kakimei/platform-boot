@@ -25,5 +25,7 @@ public interface ReservationInfoService {
 
 	List<ReservationInfoDto> findReservationInfoByDateAndTime(Date reserveDate, String timeString);
 
+	List<ReservationInfoDto> findReservationInfoByDate(Date reserveDate);
+
 	List<ReservationInfoDto> findReservationInfoAndFeedbackByUserNameAndId(String userName, List<Long> reservationInfoIdList);
 }

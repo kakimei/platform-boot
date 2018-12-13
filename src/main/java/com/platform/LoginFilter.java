@@ -19,13 +19,14 @@ import java.io.IOException;
 
 @Slf4j
 @Component
-@WebFilter(urlPatterns = "/platform/*", filterName = "loginFilter")
+@WebFilter(urlPatterns = "/*", filterName = "loginFilter")
 @Order(2)
 public class LoginFilter implements Filter {
 
 	private static final String LOGIN_URI = "/platform/user/login";
 	private static final String REGISTER_URI = "/platform/user/register";
 	private static final String WX_TOKEN = "/platform/weixin/userInfo/get";
+	private static final String BO_URI = "/platform/bo";
 	@Autowired
 	private UserService userService;
 
@@ -38,7 +39,10 @@ public class LoginFilter implements Filter {
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
 		throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest)servletRequest;
-		if(REGISTER_URI.equals(request.getRequestURI()) || LOGIN_URI.equals(request.getRequestURI()) || WX_TOKEN.equals(request.getRequestURI())){
+		if(REGISTER_URI.equals(request.getRequestURI()) ||
+			LOGIN_URI.equals(request.getRequestURI()) ||
+			WX_TOKEN.equals(request.getRequestURI()) ||
+			request.getRequestURI().startsWith(BO_URI)){
 			filterChain.doFilter(servletRequest, servletResponse);
 			return;
 		}

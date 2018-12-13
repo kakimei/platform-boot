@@ -19,6 +19,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -163,7 +164,7 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
 			timeResourceService.getBeginMinute(timeString),
 			timeResourceService.getEndHour(timeString),
 			timeResourceService.getEndMinute(timeString));
-		if(CollectionUtils.isEmpty(reservationInfoList)){
+		if (CollectionUtils.isEmpty(reservationInfoList)) {
 			return result;
 		}
 		reservationInfoList.forEach(reservationInfo -> result.add(reserveDtoTransferBuilder.toDto(reservationInfo)));
@@ -173,12 +174,12 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
 	@Override
 	public List<ReservationInfoDto> findReservationInfoAndFeedbackByUserNameAndId(String userName, List<Long> reservationInfoIdList) {
 		List<ReservationInfoDto> result = new ArrayList<>();
-		if(CollectionUtils.isEmpty(reservationInfoIdList)){
+		if (CollectionUtils.isEmpty(reservationInfoIdList)) {
 			return result;
 		}
 		List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByReservationInfoIdInAndDeletedFalse(
 			reservationInfoIdList);
-		if(CollectionUtils.isEmpty(reservationInfoList)){
+		if (CollectionUtils.isEmpty(reservationInfoList)) {
 			return result;
 		}
 		reservationInfoList.forEach(reservationInfo -> {
@@ -189,5 +190,17 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
 			result.add(reservationInfoDto);
 		});
 		return result;
+	}
+
+	@Override
+	public List<ReservationInfoDto> findReservationInfoByDate(Date reserveDate) {
+		if (reserveDate == null) {
+			return new ArrayList<>();
+		}
+		List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByReserveDateAndDeletedFalse(reserveDate);
+		if (CollectionUtils.isEmpty(reservationInfoList)) {
+			return new ArrayList<>();
+		}
+		return reservationInfoList.stream().map(reservationInfo -> reserveDtoTransferBuilder.toDto(reservationInfo)).collect(Collectors.toList());
 	}
 }
