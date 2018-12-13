@@ -16,7 +16,7 @@ import java.io.IOException;
 
 @Slf4j
 @Component
-@WebFilter(urlPatterns = "/platform/*", filterName = "CORSFilter")
+@WebFilter(urlPatterns = "/*", filterName = "CORSFilter")
 @Order(1)
 public class CORSFilter implements Filter {
 
