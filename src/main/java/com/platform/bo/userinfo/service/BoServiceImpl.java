@@ -67,7 +67,7 @@ public class BoServiceImpl implements BoUserService {
 	@Transactional(propagation = Propagation.SUPPORTS)
 	public String check(String boUserToken, String boUserName) {
 		try {
-			boUserCache.get(boUserToken, () -> {
+			return boUserCache.get(boUserToken, () -> {
 				BoUser boUser = findByName(boUserName);
 				return boUser == null ? null : boUser.getBoUserName();
 			});
