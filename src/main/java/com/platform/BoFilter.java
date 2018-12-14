@@ -23,7 +23,7 @@ import java.io.IOException;
 @Order(3)
 public class BoFilter implements Filter {
 
-	private static final String LOGIN_URI = "/platform/bo/login";
+	private static final String LOGIN_URI = "/platform/bo/user/login";
 
 	@Autowired
 	private BoUserService boUserService;
