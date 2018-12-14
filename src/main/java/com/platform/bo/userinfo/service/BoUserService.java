@@ -2,6 +2,7 @@ package com.platform.bo.userinfo.service;
 
 import com.platform.bo.userinfo.repository.entity.BoUser;
 import com.platform.bo.userinfo.repository.entity.RoleType;
+import com.platform.bo.userinfo.service.dto.BoUserDTO;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public interface BoUserService {
 
 	BoUser findByName(String boUserName);
 
-	String login(String boUserName, String boPassword);
+	BoUserDTO login(String boUserName, String boPassword);
 
 	BoUser updatePassword(String boUserName, String oldPassword, String newPassword);
 

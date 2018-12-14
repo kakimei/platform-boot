@@ -16,4 +16,5 @@ public class BoUserVO {
 	private String oldBoUserPass;
 	private String boUserPass;
 	private RoleType roleType;
+	private String token;
 }

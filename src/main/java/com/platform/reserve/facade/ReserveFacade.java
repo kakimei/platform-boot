@@ -145,15 +145,13 @@ public class ReserveFacade {
 		}
 	}
 
-	public Response<List<ReserveVO>> getActiveReservationList(String userName) {
+	public Response<List<ReserveVO>> getActiveReservationList() {
 		List<ReserveVO> result = new ArrayList<>();
 		try {
 			List<ReservationInfoDto> reservationList = reservationInfoService.findAllActiveReservationInfo();
 			if (!CollectionUtils.isEmpty(reservationList)) {
 				reservationList.forEach(reservationInfoDto -> {
 					ReserveVO reserveVO = reserveDtoTransferBuilder.toVO(reservationInfoDto);
-					reserveVO.setHasSigned(
-						signReservationInfoService.hasSignedByReservationInfoIdAndUserName(reservationInfoDto.getReservationInfoId(), userName));
 					Date reserveDay = reserveVO.getReserveDay();
 					LocalDate localDate = LocalDateTime.ofInstant(reserveDay.toInstant(), ZoneId.systemDefault()).toLocalDate();
 					LocalDate today = LocalDate.now();

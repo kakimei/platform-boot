@@ -3,8 +3,8 @@ package com.platform.bo.userinfo.controller;
 import com.platform.bo.userinfo.controller.vo.BoUserVO;
 import com.platform.bo.userinfo.repository.entity.BoUser;
 import com.platform.bo.userinfo.service.BoUserService;
+import com.platform.bo.userinfo.service.dto.BoUserDTO;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,12 +36,19 @@ public class BoUserController {
 	}
 
 	@RequestMapping(path = "/login", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-	public @ResponseBody String login(@RequestBody BoUserVO boUserVO){
+	public @ResponseBody BoUserVO login(@RequestBody BoUserVO boUserVO){
 		if(boUserVO == null){
-			return "";
+			return null;
 		}
-		String boUserToken = boUserService.login(boUserVO.getBoUserName(), boUserVO.getBoUserPass());
-		return StringUtils.isBlank(boUserToken) ? "" : boUserToken;
+		BoUserDTO boUserDTO = boUserService.login(boUserVO.getBoUserName(), boUserVO.getBoUserPass());
+		if(boUserDTO == null){
+			return null;
+		}
+		BoUserVO result = new BoUserVO();
+		result.setBoUserName(boUserDTO.getBoUserName());
+		result.setRoleType(boUserDTO.getRoleType());
+		result.setToken(boUserDTO.getToken());
+		return result;
 	}
 
 	@RequestMapping(path = "/deleteBoUser", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
@@ -75,7 +82,7 @@ public class BoUserController {
 		return boUser != null;
 	}
 
-	@RequestMapping(path = "/all", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+	@RequestMapping(path = "/all", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
 	public @ResponseBody
 	List<BoUserVO> allBoUser(HttpServletRequest httpServletRequest){
 		List<BoUserVO> result = new ArrayList<>();
@@ -85,7 +92,7 @@ public class BoUserController {
 			return result;
 		}
 		List<BoUser> allUser = boUserService.findAllUser();
-		return allUser.stream().map(b -> {
+		return allUser.stream().filter(b -> !b.getBoUserName().equals(boUser.getBoUserName())).map(b -> {
 			BoUserVO boUserVO = new BoUserVO();
 			boUserVO.setBoUserName(b.getBoUserName());
 			boUserVO.setRoleType(b.getRoleType());

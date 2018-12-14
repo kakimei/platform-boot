@@ -22,7 +22,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping(path = "/reserve")
+@RequestMapping(path = {"/reserve", "/bo/reserve"})
 public class ReserveController {
 
 	@Autowired
@@ -87,9 +87,8 @@ public class ReserveController {
 
 	@RequestMapping(path = "/alllist", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
 	public @ResponseBody
-	List<ReserveVO> allList(HttpServletRequest httpServletRequest) {
-		String user = (String) httpServletRequest.getAttribute("user");
-		Response<List<ReserveVO>> result = reserveFacade.getActiveReservationList(user);
+	List<ReserveVO> allList() {
+		Response<List<ReserveVO>> result = reserveFacade.getActiveReservationList();
 		if (result.getResponseType().isSuccess()) {
 			log.info("get reservation list success.");
 			return result.getEntity();

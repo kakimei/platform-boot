@@ -5,6 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import com.platform.bo.userinfo.repository.BoUserRepository;
 import com.platform.bo.userinfo.repository.entity.BoUser;
 import com.platform.bo.userinfo.repository.entity.RoleType;
+import com.platform.bo.userinfo.service.dto.BoUserDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +88,7 @@ public class BoServiceImpl implements BoUserService {
 
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS)
-	public String login(String boUserName, String boPassword) {
+	public BoUserDTO login(String boUserName, String boPassword) {
 		if(StringUtils.isBlank(boUserName) || StringUtils.isBlank(boPassword)){
 			return null;
 		}
@@ -98,7 +99,10 @@ public class BoServiceImpl implements BoUserService {
 		if(boPassword.equals(boUser.getBoPassword())){
 			String boUserToken = UUID.randomUUID().toString();
 			boUserCache.put(boUserToken, boUserName);
-			return boUserToken;
+			return BoUserDTO.builder()
+				.boUserName(boUser.getBoUserName())
+				.roleType(boUser.getRoleType())
+				.token(boUserToken).build();
 		}
 		return null;
 	}
