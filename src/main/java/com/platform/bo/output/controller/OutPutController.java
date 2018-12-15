@@ -29,7 +29,7 @@ public class OutPutController {
 	@Autowired
 	private BoUserService boUserService;
 
-	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
+	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd_hhmmss");
 	@RequestMapping(path = "/reservation/excel/date", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
 	public void outputExcel(@RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date reserveDate, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
 		String boUserName = (String) httpServletRequest.getAttribute("boUser");

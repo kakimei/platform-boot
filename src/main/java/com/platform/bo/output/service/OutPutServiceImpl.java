@@ -21,6 +21,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +67,9 @@ public class OutPutServiceImpl implements OutPutService {
 		HSSFWorkbook result = null;
 		Map<Date, List<ReservationInfoDto>> reservationMap = reservationInfoDtoList.stream().collect(
 			Collectors.groupingBy(ReservationInfoDto::getReserveDate));
-		for(Map.Entry<Date, List<ReservationInfoDto>> entry : reservationMap.entrySet()){
+		List<Map.Entry<Date, List<ReservationInfoDto>>> collect = reservationMap.entrySet().stream().sorted(
+			(Comparator.comparing(Map.Entry::getKey))).collect(Collectors.toList());
+		for(Map.Entry<Date, List<ReservationInfoDto>> entry : collect){
 			Date reserveDate = entry.getKey();
 			List<ReservationInfoDto> reservationInfoDtos = entry.getValue();
 			List<ReservationExcelDTO> excelData = reservationInfoDtos.stream().map(reservationInfoDto -> {
