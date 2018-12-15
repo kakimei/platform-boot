@@ -199,5 +199,19 @@ public class ReserveFacade {
 		return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.SUCCESS).entity(reserveVO).build();
 	}
 
-
+	public Response<List<ReserveVO>> getReservationListByReserveDate(Request<ReserveVO> request) {
+		ReserveVO reserveVO = request.getEntity();
+		try {
+			List<ReservationInfoDto> reservationInfoList = reservationInfoService.findReservationInfoByDate(reserveVO.getReserveDay());
+			if (CollectionUtils.isEmpty(reservationInfoList)) {
+				return ReserveResponse.<List<ReserveVO>>builder().responseType(ResponseType.SUCCESS).entity(new ArrayList<>()).build();
+			}
+			List<ReserveVO> result = reservationInfoList.stream().map(
+				reservationInfoDto -> reserveDtoTransferBuilder.toVO(reservationInfoDto)).collect(Collectors.toList());
+			return ReserveResponse.<List<ReserveVO>>builder().responseType(ResponseType.SUCCESS).entity(result).build();
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			return ReserveResponse.<List<ReserveVO>>builder().responseType(ResponseType.FAIL).entity(new ArrayList<>()).build();
+		}
+	}
 }

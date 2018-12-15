@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -89,6 +92,24 @@ public class ReserveController {
 	public @ResponseBody
 	List<ReserveVO> allList() {
 		Response<List<ReserveVO>> result = reserveFacade.getActiveReservationList();
+		if (result.getResponseType().isSuccess()) {
+			log.info("get reservation list success.");
+			return result.getEntity();
+		}
+		log.error("get reservation list failed. cause : {}", result.getErrMsg());
+		return new ArrayList<>();
+	}
+
+	@RequestMapping(path = "/{reservationDate}/list", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+	public @ResponseBody
+	List<ReserveVO> listForReservationDate(@PathVariable("reservationDate") @DateTimeFormat(pattern="yyyy-MM-dd") Date reservationDate) {
+		if(reservationDate == null){
+			return new ArrayList<>();
+		}
+		ReserveVO reserveVO = new ReserveVO();
+		reserveVO.setReserveDay(reservationDate);
+		Request<ReserveVO> request = Request.<ReserveVO>builder().entity(reserveVO).build();
+		Response<List<ReserveVO>> result = reserveFacade.getReservationListByReserveDate(request);
 		if (result.getResponseType().isSuccess()) {
 			log.info("get reservation list success.");
 			return result.getEntity();
