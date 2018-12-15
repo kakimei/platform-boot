@@ -10,7 +10,7 @@ import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import java.util.Date;
 
 @Data
-@ExcelObject(sheetName = "预约信息")
+@ExcelObject
 public class ReservationExcelDTO {
 	@ExcelColumn(columnName = "联系人", columnStyle = HorizontalAlignment.LEFT)
 	private String linkManName;

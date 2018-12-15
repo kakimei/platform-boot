@@ -1,6 +1,5 @@
 package com.platform.bo.output.controller;
 
-import com.platform.bo.output.controller.vo.OutPutVO;
 import com.platform.bo.output.service.OutPutService;
 import com.platform.bo.userinfo.repository.entity.BoUser;
 import com.platform.bo.userinfo.service.BoUserService;
@@ -8,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -44,12 +41,28 @@ public class OutPutController {
 			return;
 		}
 
-		try(HSSFWorkbook workbook = outPutService.outputExcelByReserveDate(reserveDate)) {
-			setResponseHeader(httpServletResponse, "预约信息一览" + SDF.format(reserveDate) + ".xls");
- 			OutputStream os = httpServletResponse.getOutputStream();
+		try(HSSFWorkbook workbook = outPutService.outputExcelByReserveDate(reserveDate);
+			OutputStream os = httpServletResponse.getOutputStream()) {
+			setResponseHeader(httpServletResponse, "预约信息一览" + SDF.format(new Date()) + ".xls");
 			workbook.write(os);
 			os.flush();
-			os.close();
+		} catch (Exception e) {
+			log.error("download error. {}", e.getMessage());
+		}
+	}
+
+	@RequestMapping(path = "/reservation/excel/all", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+	public void outputExcelAll(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+		String boUserName = (String) httpServletRequest.getAttribute("boUser");
+		BoUser boUser = boUserService.findByName(boUserName);
+		if (!boUser.getRoleType().canDownloadReservation()) {
+			return;
+		}
+		try(HSSFWorkbook workbook = outPutService.outputExcelAll();
+			OutputStream os = httpServletResponse.getOutputStream()) {
+			setResponseHeader(httpServletResponse, "预约信息一览" + SDF.format(new Date()) + ".xls");
+			workbook.write(os);
+			os.flush();
 		} catch (Exception e) {
 			log.error("download error. {}", e.getMessage());
 		}

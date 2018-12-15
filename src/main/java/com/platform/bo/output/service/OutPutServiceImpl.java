@@ -23,6 +23,7 @@ import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,36 +55,45 @@ public class OutPutServiceImpl implements OutPutService {
 
 	@Override
 	public HSSFWorkbook outputExcelAll() {
-		return null;
+		List<ReservationInfoDto> reservationInfoDtoList = reservationInfoService.findAllActiveReservationInfo();
+		return outputExcelForReservation(reservationInfoDtoList);
 	}
 
 	private HSSFWorkbook outputExcelForReservation(List<ReservationInfoDto> reservationInfoDtoList) {
 		if (CollectionUtils.isEmpty(reservationInfoDtoList)) {
-			return getReservationExcelPlatform(ReservationExcelDTO.class);
+			return getReservationExcelPlatform(null, "预约表", ReservationExcelDTO.class);
 		}
-		List<ReservationExcelDTO> excelData = reservationInfoDtoList.stream().map(reservationInfoDto -> {
-			ReservationExcelDTO reservationExcelDTO = new ReservationExcelDTO();
-			reservationExcelDTO.setActivityType(ActivityType.valueOf(reservationInfoDto.getActivityType().name()));
-			reservationExcelDTO.setAge(reservationInfoDto.getAge());
-			reservationExcelDTO.setSex(Sex.valueOf(reservationInfoDto.getSex().name()));
-			reservationExcelDTO.setLinkManName(reservationInfoDto.getLinkManName());
-			reservationExcelDTO.setPeopleCount(reservationInfoDto.getPeopleCount());
-			reservationExcelDTO.setPhoneNumber(reservationInfoDto.getPhoneNumber());
-			reservationExcelDTO.setReserveDay(reservationInfoDto.getReserveDate());
-			reservationExcelDTO.setTimeString(reserveDtoTransferBuilder.buildTimeString(
-				reservationInfoDto.getReserveBeginHH(),
-				reservationInfoDto.getReserveBeginMM(),
-				reservationInfoDto.getReserveEndHH(),
-				reservationInfoDto.getReserveEndMM()));
-			return reservationExcelDTO;
-		}).collect(Collectors.toList());
-		return buildWorkBook(excelData);
+		HSSFWorkbook result = null;
+		Map<Date, List<ReservationInfoDto>> reservationMap = reservationInfoDtoList.stream().collect(
+			Collectors.groupingBy(ReservationInfoDto::getReserveDate));
+		for(Map.Entry<Date, List<ReservationInfoDto>> entry : reservationMap.entrySet()){
+			Date reserveDate = entry.getKey();
+			List<ReservationInfoDto> reservationInfoDtos = entry.getValue();
+			List<ReservationExcelDTO> excelData = reservationInfoDtos.stream().map(reservationInfoDto -> {
+				ReservationExcelDTO reservationExcelDTO = new ReservationExcelDTO();
+				reservationExcelDTO.setActivityType(ActivityType.valueOf(reservationInfoDto.getActivityType().name()));
+				reservationExcelDTO.setAge(reservationInfoDto.getAge());
+				reservationExcelDTO.setSex(Sex.valueOf(reservationInfoDto.getSex().name()));
+				reservationExcelDTO.setLinkManName(reservationInfoDto.getLinkManName());
+				reservationExcelDTO.setPeopleCount(reservationInfoDto.getPeopleCount());
+				reservationExcelDTO.setPhoneNumber(reservationInfoDto.getPhoneNumber());
+				reservationExcelDTO.setReserveDay(reservationInfoDto.getReserveDate());
+				reservationExcelDTO.setTimeString(reserveDtoTransferBuilder.buildTimeString(
+					reservationInfoDto.getReserveBeginHH(),
+					reservationInfoDto.getReserveBeginMM(),
+					reservationInfoDto.getReserveEndHH(),
+					reservationInfoDto.getReserveEndMM()));
+				return reservationExcelDTO;
+			}).collect(Collectors.toList());
+			result = buildWorkBook(result, reserveDate, excelData);
+		}
+		return result;
 	}
 
-	private HSSFWorkbook buildWorkBook(List<ReservationExcelDTO> reservationExcelDTOList) {
+	private HSSFWorkbook buildWorkBook(HSSFWorkbook wb, Date reserveDate, List<ReservationExcelDTO> reservationExcelDTOList) {
 		ExcelObject excelObject = ReservationExcelDTO.class.getDeclaredAnnotation(ExcelObject.class);
-		String sheetName = excelObject.sheetName();
-		HSSFWorkbook workbook = getReservationExcelPlatform(ReservationExcelDTO.class);
+		String sheetName = SDF.format(reserveDate);
+		HSSFWorkbook workbook = getReservationExcelPlatform(wb, sheetName, ReservationExcelDTO.class);
 		HSSFCell cell;
 		HSSFCellStyle style = workbook.createCellStyle();
 		style.setAlignment(HorizontalAlignment.LEFT);
@@ -128,13 +138,15 @@ public class OutPutServiceImpl implements OutPutService {
 		return workbook;
 	}
 
-	private HSSFWorkbook getReservationExcelPlatform(Class clazz) {
+	private HSSFWorkbook getReservationExcelPlatform(HSSFWorkbook wb, String sheetName, Class clazz) {
 		ExcelObject excelObject = (ExcelObject) clazz.getDeclaredAnnotation(ExcelObject.class);
 		if (excelObject == null) {
 			return null;
 		}
-		HSSFWorkbook wb = new HSSFWorkbook();
-		HSSFSheet sheet = wb.createSheet(excelObject.sheetName());
+		if(wb == null) {
+			wb = new HSSFWorkbook();
+		}
+		HSSFSheet sheet = wb.createSheet(sheetName);
 		HSSFRow row = sheet.createRow(0);
 		HSSFCellStyle style = wb.createCellStyle();
 		HSSFCell cell = null;
