@@ -207,7 +207,14 @@ public class ReserveFacade {
 				return ReserveResponse.<List<ReserveVO>>builder().responseType(ResponseType.SUCCESS).entity(new ArrayList<>()).build();
 			}
 			List<ReserveVO> result = reservationInfoList.stream().map(
-				reservationInfoDto -> reserveDtoTransferBuilder.toVO(reservationInfoDto)).collect(Collectors.toList());
+				reservationInfoDto -> {
+					ReserveVO reserveVO1 = reserveDtoTransferBuilder.toVO(reservationInfoDto);
+					Date reserveDay = reservationInfoDto.getReserveDate();
+					LocalDate localDate = LocalDateTime.ofInstant(reserveDay.toInstant(), ZoneId.systemDefault()).toLocalDate();
+					LocalDate today = LocalDate.now();
+					reserveVO1.setInactiveTime(localDate.isAfter(today));
+					return reserveVO1;
+				}).collect(Collectors.toList());
 			return ReserveResponse.<List<ReserveVO>>builder().responseType(ResponseType.SUCCESS).entity(result).build();
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
