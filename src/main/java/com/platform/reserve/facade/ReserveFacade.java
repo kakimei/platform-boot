@@ -85,6 +85,21 @@ public class ReserveFacade {
 		return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.SUCCESS).entity(reserveVO).build();
 	}
 
+	public Response<ReserveVO> update(Request<ReserveVO> request) {
+		ReserveVO reserveVO = request.getEntity();
+		try {
+			if(!timeResourceService.isInValidTimeResource(reserveVO.getReserveDay(), reserveVO.getTimeString(), MetaType.valueOf(reserveVO.getActivityType().name()), reserveVO.getPeopleCount())){
+				throw new ReserveException("the date time is not valid, Please choose valid date time.");
+			}
+			mailService.sendMail(emailReceiver, emailSubject, buildEmailContent(reserveVO, emailContentPlatform),
+				() -> reservationInfoService.update(reserveDtoTransferBuilder.toDto(reserveVO)));
+		} catch (EmailException | ReserveException e) {
+			log.error(e.getMessage(), e);
+			return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.FAIL).entity(reserveVO).build();
+		}
+		return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.SUCCESS).entity(reserveVO).build();
+	}
+
 	private String buildEmailContent(ReserveVO reserveVO, String contentPlatform) {
 		if (reserveVO == null) {
 			return contentPlatform;
@@ -166,10 +181,20 @@ public class ReserveFacade {
 		}
 	}
 
+	public Response<ReserveVO> findByReservationInfoIdAndUser(Request<ReserveVO> request) {
+		ReserveVO reserveVO = request.getEntity();
+		ReservationInfoDto reservationInfo = reservationInfoService.findReservationInfoByIdAndUser(reserveVO.getUserName(),
+			reserveVO.getReservationInfoId());
+		if (reservationInfo == null) {
+			return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.FAIL).entity(reserveVO).build();
+		}
+		return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.SUCCESS).entity(
+			reserveDtoTransferBuilder.toVO(reservationInfo)).build();
+	}
+
 	public Response<ReserveVO> findByReservationInfoId(Request<ReserveVO> request) {
 		ReserveVO reserveVO = request.getEntity();
-		ReservationInfoDto reservationInfo = reservationInfoService.findReservationInfoById(reserveVO.getUserName(),
-			reserveVO.getReservationInfoId());
+		ReservationInfoDto reservationInfo = reservationInfoService.findReservationInfoById(reserveVO.getReservationInfoId());
 		if (reservationInfo == null) {
 			return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.FAIL).entity(reserveVO).build();
 		}
@@ -180,6 +205,16 @@ public class ReserveFacade {
 	public Response<ReserveVO> cancel(Request<ReserveVO> request) {
 		ReserveVO reserveVO = request.getEntity();
 		ReservationInfoDto reservationInfoDto = reservationInfoService.cancel(reserveVO.getUserName(), reserveVO.getReservationInfoId());
+		if (reservationInfoDto == null) {
+			return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.FAIL).entity(reserveVO).build();
+		}
+		return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.SUCCESS).entity(
+			reserveDtoTransferBuilder.toVO(reservationInfoDto)).build();
+	}
+
+	public Response<ReserveVO> cancelByBOUser(Request<ReserveVO> request) {
+		ReserveVO reserveVO = request.getEntity();
+		ReservationInfoDto reservationInfoDto = reservationInfoService.cancel(reserveVO.getReservationInfoId());
 		if (reservationInfoDto == null) {
 			return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.FAIL).entity(reserveVO).build();
 		}

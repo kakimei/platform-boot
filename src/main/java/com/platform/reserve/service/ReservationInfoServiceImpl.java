@@ -42,27 +42,52 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void save(ReservationInfoDto reservationInfoDto) {
 		if (reservationInfoDto.getReservationInfoId() != null) {
-			ReservationInfo reservationInfo = reservationInfoRepository.findByReservationInfoIdAndDeletedFalse(
-				reservationInfoDto.getReservationInfoId());
-			if (reservationInfo != null) {
-				BeanUtils.copyProperties(reservationInfoDto, reservationInfo, "reservationInfoId");
-				reservationInfoRepository.save(reservationInfo);
-				return;
-			}
-			log.warn("this reservation has been deleted. reservation id : {}", reservationInfoDto.getReservationInfoId());
+			update(reservationInfoDto);
 			return;
 		}
 		reservationInfoRepository.save(reserveDtoTransferBuilder.toEntity(reservationInfoDto));
 	}
 
 	@Override
+	@Transactional(propagation = Propagation.REQUIRED)
+	public void update(ReservationInfoDto reservationInfoDto) {
+		if (reservationInfoDto.getReservationInfoId() == null) {
+			log.warn("parameter is not correct.");
+			return;
+		}
+		ReservationInfo reservationInfo = reservationInfoRepository.findByReservationInfoIdAndDeletedFalse(
+			reservationInfoDto.getReservationInfoId());
+		if (reservationInfo == null) {
+			log.warn("the reservation does not exist.");
+		}
+		BeanUtils.copyProperties(reservationInfoDto, reservationInfo, "reservationInfoId", "userName");
+		reservationInfoRepository.save(reservationInfo);
+		return;
+	}
+
+	@Override
 	@Transactional(propagation = Propagation.SUPPORTS)
-	public ReservationInfoDto findReservationInfoById(String user, Long reservationInfoId) {
+	public ReservationInfoDto findReservationInfoByIdAndUser(String user, Long reservationInfoId) {
 		if (reservationInfoId == null || StringUtils.isBlank(user)) {
 			log.warn("reservationInfoId is null or user is null.");
 			return null;
 		}
 		ReservationInfo reservationInfo = reservationInfoRepository.findByReservationInfoIdAndUserNameAndDeletedFalse(reservationInfoId, user);
+		if (reservationInfo == null) {
+			log.warn("this reservationInfoId does not exist. reservationInfoId : {}", reservationInfoId);
+			return null;
+		}
+		return reserveDtoTransferBuilder.toDto(reservationInfo);
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public ReservationInfoDto findReservationInfoById(Long reservationInfoId) {
+		if (reservationInfoId == null) {
+			log.warn("reservationInfoId is null.");
+			return null;
+		}
+		ReservationInfo reservationInfo = reservationInfoRepository.findByReservationInfoIdAndDeletedFalse(reservationInfoId);
 		if (reservationInfo == null) {
 			log.warn("this reservationInfoId does not exist. reservationInfoId : {}", reservationInfoId);
 			return null;
@@ -147,6 +172,23 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
 			reservationInfoId, user);
 		if (reservationInfo == null) {
 			log.warn("the reservation does not exist. user : {}, reservationInfoId : {}", user, reservationInfoId);
+			return null;
+		}
+		reservationInfo.setDeleted(true);
+		ReservationInfo saved = reservationInfoRepository.save(reservationInfo);
+		return reserveDtoTransferBuilder.toDto(saved);
+	}
+
+	@Override
+	public ReservationInfoDto cancel(Long reservationInfoId) {
+		if (reservationInfoId == null || reservationInfoId == 0L) {
+			log.warn("reservationInfoId is null.");
+			return null;
+		}
+		ReservationInfo reservationInfo = reservationInfoRepository.findByReservationInfoIdAndDeletedFalse(
+			reservationInfoId);
+		if (reservationInfo == null) {
+			log.warn("the reservation does not exist. reservationInfoId : {}", reservationInfoId);
 			return null;
 		}
 		reservationInfo.setDeleted(true);

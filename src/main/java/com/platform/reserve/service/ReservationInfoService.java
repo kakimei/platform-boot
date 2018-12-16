@@ -9,7 +9,11 @@ public interface ReservationInfoService {
 
 	void save(ReservationInfoDto reservationInfoDto);
 
-	ReservationInfoDto findReservationInfoById(String user, Long reservationInfoId);
+	void update(ReservationInfoDto reservationInfoDto);
+
+	ReservationInfoDto findReservationInfoByIdAndUser(String user, Long reservationInfoId);
+
+	ReservationInfoDto findReservationInfoById(Long reservationInfoId);
 
 	List<ReservationInfoDto> findReservationInfoByLinkman(String linkmanName);
 
@@ -22,6 +26,8 @@ public interface ReservationInfoService {
 	List<ReservationInfoDto> findAllActiveSingleReservationInfo();
 
 	ReservationInfoDto cancel(String user, Long reservationInfoId);
+
+	ReservationInfoDto cancel(Long reservationInfoId);
 
 	List<ReservationInfoDto> findReservationInfoByDateAndTime(Date reserveDate, String timeString);
 

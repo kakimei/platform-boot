@@ -28,6 +28,7 @@ import java.util.Map;
 @RequestMapping(path = {"/reserve", "/bo/reserve"})
 public class ReserveController {
 
+	private static final String BO_URI = "/platform/bo";
 	@Autowired
 	private ReserveFacade reserveFacade;
 
@@ -47,6 +48,21 @@ public class ReserveController {
 		reserveVO.setUserName((String) httpServletRequest.getAttribute("user"));
 		Request<ReserveVO> request = Request.<ReserveVO>builder().entity(reserveVO).build();
 		Response<ReserveVO> response = reserveFacade.reserve(request);
+		return response.getResponseType().isSuccess();
+	}
+
+	@RequestMapping(path = "/update", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+	public @ResponseBody
+	Boolean update(@RequestBody ReserveVO reserveVO, HttpServletRequest httpServletRequest) {
+		if (reserveVO == null) {
+			return false;
+		}
+		reserveVO.setPeopleNumberThreshold(PEOPLE_NUMBER_THRESHOLD);
+		if (!reserveVO.canReserve()) {
+			return false;
+		}
+		Request<ReserveVO> request = Request.<ReserveVO>builder().entity(reserveVO).build();
+		Response<ReserveVO> response = reserveFacade.update(request);
 		return response.getResponseType().isSuccess();
 	}
 
@@ -121,6 +137,9 @@ public class ReserveController {
 	@RequestMapping(path = "/modify", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
 	public @ResponseBody
 	ReserveVO modify(HttpServletRequest httpServletRequest) {
+		if(isFromBoRequest(httpServletRequest)){
+			return getReservationInfoByBOUser(httpServletRequest);
+		}
 		String user = (String) httpServletRequest.getAttribute("user");
 		Long reservationInfoId = Long.valueOf(httpServletRequest.getParameter("reservationInfoId"));
 		if (StringUtils.isBlank(user) || reservationInfoId == null || reservationInfoId == 0) {
@@ -128,6 +147,21 @@ public class ReserveController {
 		}
 		ReserveVO reserveVO = new ReserveVO();
 		reserveVO.setUserName(user);
+		reserveVO.setReservationInfoId(reservationInfoId);
+		Request<ReserveVO> request = Request.<ReserveVO>builder().entity(reserveVO).build();
+		Response<ReserveVO> reserveVOResponse = reserveFacade.findByReservationInfoIdAndUser(request);
+		if (reserveVOResponse.getResponseType().isSuccess()) {
+			return reserveVOResponse.getEntity();
+		}
+		return null;
+	}
+
+	private ReserveVO getReservationInfoByBOUser(HttpServletRequest httpServletRequest){
+		Long reservationInfoId = Long.valueOf(httpServletRequest.getParameter("reservationInfoId"));
+		if (reservationInfoId == null || reservationInfoId == 0) {
+			return null;
+		}
+		ReserveVO reserveVO = new ReserveVO();
 		reserveVO.setReservationInfoId(reservationInfoId);
 		Request<ReserveVO> request = Request.<ReserveVO>builder().entity(reserveVO).build();
 		Response<ReserveVO> reserveVOResponse = reserveFacade.findByReservationInfoId(request);
@@ -140,6 +174,9 @@ public class ReserveController {
 	@RequestMapping(path = "/cancel", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
 	public @ResponseBody
 	ReserveVO cancel(@RequestBody ReserveVO reserveVO, HttpServletRequest httpServletRequest) {
+		if(isFromBoRequest(httpServletRequest)){
+			return cancelByBOUser(reserveVO);
+		}
 		String user = (String) httpServletRequest.getAttribute("user");
 		Long reservationInfoId = reserveVO.getReservationInfoId();
 		if (StringUtils.isBlank(user) || reservationInfoId == null || reservationInfoId == 0) {
@@ -148,6 +185,19 @@ public class ReserveController {
 		reserveVO.setUserName(user);
 		Request<ReserveVO> request = Request.<ReserveVO>builder().entity(reserveVO).build();
 		Response<ReserveVO> reserveVOResponse = reserveFacade.cancel(request);
+		if (reserveVOResponse.getResponseType().isSuccess()) {
+			return reserveVOResponse.getEntity();
+		}
+		return null;
+	}
+
+	private ReserveVO cancelByBOUser(ReserveVO reserveVO){
+		Long reservationInfoId = reserveVO.getReservationInfoId();
+		if (reservationInfoId == null || reservationInfoId == 0) {
+			return null;
+		}
+		Request<ReserveVO> request = Request.<ReserveVO>builder().entity(reserveVO).build();
+		Response<ReserveVO> reserveVOResponse = reserveFacade.cancelByBOUser(request);
 		if (reserveVOResponse.getResponseType().isSuccess()) {
 			return reserveVOResponse.getEntity();
 		}
@@ -172,5 +222,9 @@ public class ReserveController {
 			return reserveVOResponse.getEntity().getResourceList();
 		}
 		return null;
+	}
+
+	private boolean isFromBoRequest(HttpServletRequest httpServletRequest){
+		return httpServletRequest.getRequestURI().startsWith(BO_URI);
 	}
 }
