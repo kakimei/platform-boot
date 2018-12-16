@@ -9,5 +9,7 @@ public interface BoUserRepository extends JpaRepository<BoUser, Long> {
 
 	BoUser findByBoUserNameAndActiveTrue(String boUserName);
 
+	BoUser findByBoUserIdAndActiveTrue(Long boUserId);
+
 	List<BoUser> findByActiveTrueAndBoUserNameNot(String boUserName);
 }

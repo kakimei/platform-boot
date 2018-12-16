@@ -48,6 +48,39 @@ public class BoServiceImpl implements BoUserService {
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
+	public BoUser resetPassword(Long boUserId) {
+		if(boUserId == null || boUserId == 0){
+			return null;
+		}
+		BoUser boUserDb = boUserRepository.findByBoUserIdAndActiveTrue(boUserId);
+		if(boUserDb == null){
+			log.warn("user does not exist. bo user id : {}", boUserId);
+			return null;
+		}
+		boUserDb.setBoPassword("11111111");
+		boUserDb = boUserRepository.save(boUserDb);
+		return boUserDb;
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED)
+	public BoUser updateById(Long boUserId, String boUserName, RoleType roleType) {
+		if(boUserId == null || boUserId == 0 || StringUtils.isBlank(boUserName) || roleType == null){
+			return null;
+		}
+		BoUser boUserDb = boUserRepository.findByBoUserIdAndActiveTrue(boUserId);
+		if(boUserDb == null){
+			log.warn("user does not exist. bo user name : {}", boUserName);
+			return null;
+		}
+		boUserDb.setBoUserName(boUserName);
+		boUserDb.setRoleType(roleType);
+		boUserDb = boUserRepository.save(boUserDb);
+		return boUserDb;
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED)
 	public void disableBoUser(String boUserName) {
 		BoUser boUser = boUserRepository.findByBoUserNameAndActiveTrue(boUserName);
 		if(boUser == null){
@@ -84,6 +117,15 @@ public class BoServiceImpl implements BoUserService {
 			return null;
 		}
 		return boUserRepository.findByBoUserNameAndActiveTrue(boUserName);
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public BoUser findById(Long boUserId) {
+		if(boUserId == null || boUserId == 0){
+			return null;
+		}
+		return boUserRepository.findByBoUserIdAndActiveTrue(boUserId);
 	}
 
 	@Override

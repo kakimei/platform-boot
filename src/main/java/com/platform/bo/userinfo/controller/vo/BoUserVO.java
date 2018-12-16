@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BoUserVO {
 
+	private Long boUserId;
 	private String boUserName;
 	private String oldBoUserPass;
 	private String boUserPass;
