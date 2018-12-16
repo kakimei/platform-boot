@@ -97,13 +97,13 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
 
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS)
-	public List<ReservationInfoDto> findReservationInfoByLinkman(String linkmanName) {
+	public List<ReservationInfoDto> findReservationInfoByLinkman(String userName, String linkmanName) {
 		List<ReservationInfoDto> result = new ArrayList<>();
-		if (StringUtils.isBlank(linkmanName)) {
+		if (StringUtils.isBlank(linkmanName) || StringUtils.isBlank(userName)) {
 			log.warn("linkmanName is null.");
 			return result;
 		}
-		List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByLinkManNameAndDeletedFalse(linkmanName);
+		List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByUserNameAndLinkManNameAndDeletedFalse(userName, linkmanName);
 		if (CollectionUtils.isEmpty(reservationInfoList)) {
 			return result;
 		}
@@ -113,7 +113,23 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
 
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS)
-	public List<ReservationInfoDto> findReservationInfoByActivityType(String activityType) {
+	public List<ReservationInfoDto> findReservationInfoByPhoneNumber(String userName, String phoneNumber) {
+		List<ReservationInfoDto> result = new ArrayList<>();
+		if (StringUtils.isBlank(phoneNumber) || StringUtils.isBlank(userName)) {
+			log.warn("phoneNumber is null.");
+			return result;
+		}
+		List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByUserNameAndPhoneNumberAndDeletedFalse(userName, phoneNumber);
+		if (CollectionUtils.isEmpty(reservationInfoList)) {
+			return result;
+		}
+		reservationInfoList.forEach(reservationInfo -> result.add(reserveDtoTransferBuilder.toDto(reservationInfo)));
+		return result;
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public List<ReservationInfoDto> findReservationInfoByActivityType(String userName, String activityType) {
 		List<ReservationInfoDto> result = new ArrayList<>();
 		if (StringUtils.isBlank(activityType)) {
 			log.warn("activityType is null.");
@@ -123,7 +139,13 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
 		if (CollectionUtils.isEmpty(reservationInfoList)) {
 			return result;
 		}
-		reservationInfoList.forEach(reservationInfo -> result.add(reserveDtoTransferBuilder.toDto(reservationInfo)));
+		reservationInfoList.forEach(reservationInfo -> {
+			ReservationInfoDto reservationInfoDto = reserveDtoTransferBuilder.toDto(reservationInfo);
+			List<FeedBack> feedBackList = feedBackRepository.findByUserNameAndReservationInfoId(userName,
+				reservationInfo.getReservationInfoId());
+			reservationInfoDto.setHasFeedback(!CollectionUtils.isEmpty(feedBackList));
+			result.add(reservationInfoDto);
+		});
 		return result;
 	}
 
@@ -229,26 +251,26 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
 		return result;
 	}
 
-	@Override
-	public List<ReservationInfoDto> findReservationInfoAndFeedbackByUserNameAndId(String userName, List<Long> reservationInfoIdList) {
-		List<ReservationInfoDto> result = new ArrayList<>();
-		if (CollectionUtils.isEmpty(reservationInfoIdList)) {
-			return result;
-		}
-		List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByReservationInfoIdInAndDeletedFalse(
-			reservationInfoIdList);
-		if (CollectionUtils.isEmpty(reservationInfoList)) {
-			return result;
-		}
-		reservationInfoList.forEach(reservationInfo -> {
-			ReservationInfoDto reservationInfoDto = reserveDtoTransferBuilder.toDto(reservationInfo);
-			List<FeedBack> feedBackList = feedBackRepository.findByUserNameAndReservationInfoId(userName,
-				reservationInfo.getReservationInfoId());
-			reservationInfoDto.setHasFeedback(!CollectionUtils.isEmpty(feedBackList));
-			result.add(reservationInfoDto);
-		});
-		return result;
-	}
+//	@Override
+//	public List<ReservationInfoDto> findReservationInfoAndFeedbackByUserNameAndId(String userName, List<Long> reservationInfoIdList) {
+//		List<ReservationInfoDto> result = new ArrayList<>();
+//		if (CollectionUtils.isEmpty(reservationInfoIdList)) {
+//			return result;
+//		}
+//		List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByReservationInfoIdInAndDeletedFalse(
+//			reservationInfoIdList);
+//		if (CollectionUtils.isEmpty(reservationInfoList)) {
+//			return result;
+//		}
+//		reservationInfoList.forEach(reservationInfo -> {
+//			ReservationInfoDto reservationInfoDto = reserveDtoTransferBuilder.toDto(reservationInfo);
+//			List<FeedBack> feedBackList = feedBackRepository.findByUserNameAndReservationInfoId(userName,
+//				reservationInfo.getReservationInfoId());
+//			reservationInfoDto.setHasFeedback(!CollectionUtils.isEmpty(feedBackList));
+//			result.add(reservationInfoDto);
+//		});
+//		return result;
+//	}
 
 	@Override
 	public List<ReservationInfoDto> findReservationInfoByDate(Date reserveDate) {

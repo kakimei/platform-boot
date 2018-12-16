@@ -15,9 +15,11 @@ public interface ReservationInfoService {
 
 	ReservationInfoDto findReservationInfoById(Long reservationInfoId);
 
-	List<ReservationInfoDto> findReservationInfoByLinkman(String linkmanName);
+	List<ReservationInfoDto> findReservationInfoByLinkman(String userName, String linkmanName);
 
-	List<ReservationInfoDto> findReservationInfoByActivityType(String activityType);
+	List<ReservationInfoDto> findReservationInfoByPhoneNumber(String userName, String phoneNumber);
+
+	List<ReservationInfoDto> findReservationInfoByActivityType(String userName, String activityType);
 
 	List<ReservationInfoDto> findReservationInfoByUser(String userName);
 
@@ -35,5 +37,5 @@ public interface ReservationInfoService {
 
 	List<ReservationInfoDto> findReservationInfoByDate(Date reserveDate);
 
-	List<ReservationInfoDto> findReservationInfoAndFeedbackByUserNameAndId(String userName, List<Long> reservationInfoIdList);
+//	List<ReservationInfoDto> findReservationInfoAndFeedbackByUserNameAndId(String userName, List<Long> reservationInfoIdList);
 }

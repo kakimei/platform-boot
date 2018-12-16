@@ -16,6 +16,7 @@ import com.platform.resource.service.TimeResourceService;
 import com.platform.sign.service.SignReservationInfoService;
 import com.platform.sign.service.dto.SignReservationInfoDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.mail.EmailException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,7 +128,28 @@ public class ReserveFacade {
 		ReserveVO reserveVO = request.getEntity();
 		List<ReserveVO> result = new ArrayList<>();
 		try {
-			List<ReservationInfoDto> reservationList = reservationInfoService.findReservationInfoByActivityType(reserveVO.getActivityType().name());
+			List<ReservationInfoDto> reservationList = reservationInfoService.findReservationInfoByActivityType(reserveVO.getUserName(), reserveVO.getActivityType().name());
+			if (!CollectionUtils.isEmpty(reservationList)) {
+				reservationList.forEach(reservationInfoDto -> result.add(reserveDtoTransferBuilder.toVO(reservationInfoDto)));
+			}
+			return ReserveResponse.<List<ReserveVO>>builder().responseType(ResponseType.SUCCESS).entity(result).build();
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			return ReserveResponse.<List<ReserveVO>>builder().responseType(ResponseType.FAIL).entity(result).build();
+		}
+	}
+
+	public Response<List<ReserveVO>> getReservationListByCondition(Request<ReserveVO> request) {
+		ReserveVO reserveVO = request.getEntity();
+		List<ReserveVO> result = new ArrayList<>();
+		try {
+			List<ReservationInfoDto> reservationList = new ArrayList<>();
+			if(StringUtils.isNotBlank(reserveVO.getLinkManName())){
+				reservationList = reservationInfoService.findReservationInfoByLinkman(reserveVO.getUserName(), reserveVO.getLinkManName());
+			}else if(StringUtils.isNotBlank(reserveVO.getPhoneNumber())){
+				reservationList = reservationInfoService.findReservationInfoByPhoneNumber(reserveVO.getUserName(), reserveVO.getPhoneNumber());
+			}
+
 			if (!CollectionUtils.isEmpty(reservationList)) {
 				reservationList.forEach(reservationInfoDto -> result.add(reserveDtoTransferBuilder.toVO(reservationInfoDto)));
 			}
@@ -153,27 +175,27 @@ public class ReserveFacade {
 		}
 	}
 
-	public Response<List<ReserveVO>> getReservationListBySignIn(Request<ReserveVO> request) {
-		ReserveVO reserveVO = request.getEntity();
-		List<ReserveVO> result = new ArrayList<>();
-		try {
-			List<SignReservationInfoDTO> signReservationInfoDTOList = signReservationInfoService.getSignedListByUserName(reserveVO.getUserName());
-			if (CollectionUtils.isEmpty(signReservationInfoDTOList)) {
-				return ReserveResponse.<List<ReserveVO>>builder().responseType(ResponseType.SUCCESS).entity(result).build();
-			}
-			List<Long> reservationInfoIdList = signReservationInfoDTOList.stream().map(
-				signReservationInfoDTO -> signReservationInfoDTO.getReservationInfoId()).collect(Collectors.toList());
-			List<ReservationInfoDto> reservationList = reservationInfoService.findReservationInfoAndFeedbackByUserNameAndId(reserveVO.getUserName(),
-				reservationInfoIdList);
-			if (!CollectionUtils.isEmpty(reservationList)) {
-				reservationList.forEach(reservationInfoDto -> result.add(reserveDtoTransferBuilder.toVO(reservationInfoDto)));
-			}
-			return ReserveResponse.<List<ReserveVO>>builder().responseType(ResponseType.SUCCESS).entity(result).build();
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-			return ReserveResponse.<List<ReserveVO>>builder().responseType(ResponseType.FAIL).entity(result).build();
-		}
-	}
+//	public Response<List<ReserveVO>> getReservationListBySignIn(Request<ReserveVO> request) {
+//		ReserveVO reserveVO = request.getEntity();
+//		List<ReserveVO> result = new ArrayList<>();
+//		try {
+//			List<SignReservationInfoDTO> signReservationInfoDTOList = signReservationInfoService.getSignedListByUserName(reserveVO.getUserName());
+//			if (CollectionUtils.isEmpty(signReservationInfoDTOList)) {
+//				return ReserveResponse.<List<ReserveVO>>builder().responseType(ResponseType.SUCCESS).entity(result).build();
+//			}
+//			List<Long> reservationInfoIdList = signReservationInfoDTOList.stream().map(
+//				signReservationInfoDTO -> signReservationInfoDTO.getReservationInfoId()).collect(Collectors.toList());
+//			List<ReservationInfoDto> reservationList = reservationInfoService.findReservationInfoAndFeedbackByUserNameAndId(reserveVO.getUserName(),
+//				reservationInfoIdList);
+//			if (!CollectionUtils.isEmpty(reservationList)) {
+//				reservationList.forEach(reservationInfoDto -> result.add(reserveDtoTransferBuilder.toVO(reservationInfoDto)));
+//			}
+//			return ReserveResponse.<List<ReserveVO>>builder().responseType(ResponseType.SUCCESS).entity(result).build();
+//		} catch (Exception e) {
+//			log.error(e.getMessage(), e);
+//			return ReserveResponse.<List<ReserveVO>>builder().responseType(ResponseType.FAIL).entity(result).build();
+//		}
+//	}
 
 	public Response<List<ReserveVO>> getActiveReservationList() {
 		List<ReserveVO> result = new ArrayList<>();

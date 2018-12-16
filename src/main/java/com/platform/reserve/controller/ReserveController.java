@@ -83,8 +83,13 @@ public class ReserveController {
 		if (StringUtils.isBlank(activityType)) {
 			return new ArrayList<>();
 		}
+		String user = (String) httpServletRequest.getAttribute("user");
+		if (StringUtils.isBlank(user)) {
+			return new ArrayList<>();
+		}
 		ReserveVO entity = new ReserveVO();
 		entity.setActivityType(ActivityType.valueOf(activityType));
+		entity.setUserName(user);
 		Request<ReserveVO> request = Request.<ReserveVO>builder().entity(entity).build();
 		Response<List<ReserveVO>> result = reserveFacade.getReservationListByActivityType(request);
 		if (result.getResponseType().isSuccess()) {
@@ -92,6 +97,33 @@ public class ReserveController {
 			return result.getEntity();
 		}
 		log.error("get reservation list failed. activityType : {}, cause : {}", activityType, result.getErrMsg());
+		return new ArrayList<>();
+	}
+
+	@RequestMapping(path = "/searchList", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+	public @ResponseBody
+	List<ReserveVO> searchlist(@RequestParam(name = "searchKey") String searchKey, @RequestParam(name = "searchValue") String searchValue, HttpServletRequest httpServletRequest) {
+		if (StringUtils.isBlank(searchKey) || StringUtils.isBlank(searchValue)) {
+			return new ArrayList<>();
+		}
+		String user = (String) httpServletRequest.getAttribute("user");
+		if (StringUtils.isBlank(user)) {
+			return new ArrayList<>();
+		}
+		ReserveVO entity = new ReserveVO();
+		if("linkManName".equals(searchKey)){
+			entity.setLinkManName(searchValue);
+		}else if("phoneNumber".equals(searchKey)){
+			entity.setPhoneNumber(searchValue);
+		}
+		entity.setUserName(user);
+		Request<ReserveVO> request = Request.<ReserveVO>builder().entity(entity).build();
+		Response<List<ReserveVO>> result = reserveFacade.getReservationListByCondition(request);
+		if (result.getResponseType().isSuccess()) {
+			log.info("get reservation list success.");
+			return result.getEntity();
+		}
+		log.error("get reservation list failed. cause : {}", result.getErrMsg());
 		return new ArrayList<>();
 	}
 
@@ -114,24 +146,24 @@ public class ReserveController {
 		return new ArrayList<>();
 	}
 
-	@RequestMapping(path = "/mySignInlist", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-	public @ResponseBody
-	List<ReserveVO> mySignInlist(HttpServletRequest httpServletRequest) {
-		String user = (String) httpServletRequest.getAttribute("user");
-		if (StringUtils.isBlank(user)) {
-			return new ArrayList<>();
-		}
-		ReserveVO entity = new ReserveVO();
-		entity.setUserName(user);
-		Request<ReserveVO> request = Request.<ReserveVO>builder().entity(entity).build();
-		Response<List<ReserveVO>> result = reserveFacade.getReservationListBySignIn(request);
-		if (result.getResponseType().isSuccess()) {
-			log.info("get reservation list success. username : {}", user);
-			return result.getEntity();
-		}
-		log.error("get reservation list failed. username : {}, cause : {}", user, result.getErrMsg());
-		return new ArrayList<>();
-	}
+//	@RequestMapping(path = "/mySignInlist", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+//	public @ResponseBody
+//	List<ReserveVO> mySignInlist(HttpServletRequest httpServletRequest) {
+//		String user = (String) httpServletRequest.getAttribute("user");
+//		if (StringUtils.isBlank(user)) {
+//			return new ArrayList<>();
+//		}
+//		ReserveVO entity = new ReserveVO();
+//		entity.setUserName(user);
+//		Request<ReserveVO> request = Request.<ReserveVO>builder().entity(entity).build();
+//		Response<List<ReserveVO>> result = reserveFacade.getReservationListBySignIn(request);
+//		if (result.getResponseType().isSuccess()) {
+//			log.info("get reservation list success. username : {}", user);
+//			return result.getEntity();
+//		}
+//		log.error("get reservation list failed. username : {}, cause : {}", user, result.getErrMsg());
+//		return new ArrayList<>();
+//	}
 
 	@RequestMapping(path = "/alllist", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
 	public @ResponseBody
