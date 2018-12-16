@@ -17,6 +17,8 @@ public interface ReservationInfoService {
 
 	List<ReservationInfoDto> findReservationInfoByLinkman(String linkmanName);
 
+	List<ReservationInfoDto> findReservationInfoByActivityType(String activityType);
+
 	List<ReservationInfoDto> findReservationInfoByUser(String userName);
 
 	List<ReservationInfoDto> findAllActiveReservationInfo();

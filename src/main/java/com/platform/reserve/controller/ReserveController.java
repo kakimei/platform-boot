@@ -1,5 +1,6 @@
 package com.platform.reserve.controller;
 
+import com.platform.reserve.controller.vo.ActivityType;
 import com.platform.reserve.controller.vo.ReserveVO;
 import com.platform.facade.Request;
 import com.platform.facade.Response;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -61,18 +63,41 @@ public class ReserveController {
 		if (reserveVO == null) {
 			return false;
 		}
-		reserveVO.setPeopleNumberThreshold(PEOPLE_NUMBER_THRESHOLD);
-		if (!reserveVO.canReserve()) {
+		ReserveVO cancelResult;
+		if(isFromBoRequest(httpServletRequest)){
+			cancelResult = cancelByBOUser(reserveVO);
+		}else{
+			cancelResult = cancel(reserveVO, httpServletRequest);
+		}
+		if(cancelResult == null){
+			log.warn("cancel error! reservationInfoId : {}", reserveVO.getReservationInfoId());
 			return false;
 		}
-		Request<ReserveVO> request = Request.<ReserveVO>builder().entity(reserveVO).build();
-		Response<ReserveVO> response = reserveFacade.update(request);
-		return response.getResponseType().isSuccess();
+		reserveVO.setReservationInfoId(null);
+		return reserve(reserveVO, httpServletRequest);
 	}
 
 	@RequestMapping(path = "/list", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
 	public @ResponseBody
-	List<ReserveVO> list(HttpServletRequest httpServletRequest) {
+	List<ReserveVO> list(@RequestParam(name = "activityType") String activityType, HttpServletRequest httpServletRequest) {
+		if (StringUtils.isBlank(activityType)) {
+			return new ArrayList<>();
+		}
+		ReserveVO entity = new ReserveVO();
+		entity.setActivityType(ActivityType.valueOf(activityType));
+		Request<ReserveVO> request = Request.<ReserveVO>builder().entity(entity).build();
+		Response<List<ReserveVO>> result = reserveFacade.getReservationListByActivityType(request);
+		if (result.getResponseType().isSuccess()) {
+			log.info("get reservation list success. activityType : {}", activityType);
+			return result.getEntity();
+		}
+		log.error("get reservation list failed. activityType : {}, cause : {}", activityType, result.getErrMsg());
+		return new ArrayList<>();
+	}
+
+	@RequestMapping(path = "/myList", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+	public @ResponseBody
+	List<ReserveVO> myList(HttpServletRequest httpServletRequest) {
 		String user = (String) httpServletRequest.getAttribute("user");
 		if (StringUtils.isBlank(user)) {
 			return new ArrayList<>();

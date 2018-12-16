@@ -123,6 +123,21 @@ public class ReserveFacade {
 			.replace(RESERVE_TIME, reserveDtoTransferBuilder.buildFormatString(timeString));
 	}
 
+	public Response<List<ReserveVO>> getReservationListByActivityType(Request<ReserveVO> request) {
+		ReserveVO reserveVO = request.getEntity();
+		List<ReserveVO> result = new ArrayList<>();
+		try {
+			List<ReservationInfoDto> reservationList = reservationInfoService.findReservationInfoByActivityType(reserveVO.getActivityType().name());
+			if (!CollectionUtils.isEmpty(reservationList)) {
+				reservationList.forEach(reservationInfoDto -> result.add(reserveDtoTransferBuilder.toVO(reservationInfoDto)));
+			}
+			return ReserveResponse.<List<ReserveVO>>builder().responseType(ResponseType.SUCCESS).entity(result).build();
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			return ReserveResponse.<List<ReserveVO>>builder().responseType(ResponseType.FAIL).entity(result).build();
+		}
+	}
+
 	public Response<List<ReserveVO>> getReservationListByUserName(Request<ReserveVO> request) {
 		ReserveVO reserveVO = request.getEntity();
 		List<ReserveVO> result = new ArrayList<>();
