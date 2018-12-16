@@ -45,7 +45,11 @@ public class ReserveController {
 		if (!reserveVO.canReserve()) {
 			return false;
 		}
-		reserveVO.setUserName((String) httpServletRequest.getAttribute("user"));
+		if(isFromBoRequest(httpServletRequest)){
+			reserveVO.setUserName((String) httpServletRequest.getAttribute("boUser"));
+		}else {
+			reserveVO.setUserName((String) httpServletRequest.getAttribute("user"));
+		}
 		Request<ReserveVO> request = Request.<ReserveVO>builder().entity(reserveVO).build();
 		Response<ReserveVO> response = reserveFacade.reserve(request);
 		return response.getResponseType().isSuccess();
