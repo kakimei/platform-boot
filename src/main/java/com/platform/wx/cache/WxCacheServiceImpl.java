@@ -41,6 +41,7 @@ public class WxCacheServiceImpl {
 				synchronized (access_token){
 					access_token = accessToken;
 				}
+				log.info("current access_token is : {}", access_token);
 			}
 		} catch (IOException e) {
 			log.error(e.getMessage());
