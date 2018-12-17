@@ -39,13 +39,13 @@ public class ReserveController {
 
 	@RequestMapping(method = RequestMethod.POST, produces = "application/json; charset=utf-8")
 	public @ResponseBody
-	Boolean reserve(@RequestBody ReserveVO reserveVO, HttpServletRequest httpServletRequest) {
+	Long reserve(@RequestBody ReserveVO reserveVO, HttpServletRequest httpServletRequest) {
 		if (reserveVO == null) {
-			return false;
+			return null;
 		}
 		reserveVO.setPeopleNumberThreshold(PEOPLE_NUMBER_THRESHOLD);
 		if (!reserveVO.canReserve()) {
-			return false;
+			return null;
 		}
 		if(isFromBoRequest(httpServletRequest)){
 			reserveVO.setUserName((String) httpServletRequest.getAttribute("boUser"));
@@ -54,7 +54,7 @@ public class ReserveController {
 		}
 		Request<ReserveVO> request = Request.<ReserveVO>builder().entity(reserveVO).build();
 		Response<ReserveVO> response = reserveFacade.reserve(request);
-		return response.getResponseType().isSuccess();
+		return response.getResponseType().isSuccess()? response.getEntity().getReservationInfoId() : null;
 	}
 
 	@RequestMapping(path = "/update", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
@@ -74,7 +74,7 @@ public class ReserveController {
 			return false;
 		}
 		reserveVO.setReservationInfoId(null);
-		return reserve(reserveVO, httpServletRequest);
+		return reserve(reserveVO, httpServletRequest)==null? false : true;
 	}
 
 	@RequestMapping(path = "/list", method = RequestMethod.GET, produces = "application/json; charset=utf-8")

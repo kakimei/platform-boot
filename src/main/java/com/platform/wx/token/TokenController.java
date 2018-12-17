@@ -16,16 +16,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 
+import static com.platform.wx.cache.WxCacheServiceImpl.WEIXIN_APP_ID;
+import static com.platform.wx.cache.WxCacheServiceImpl.WEIXIN_APP_SECRET;
+
 @RestController
 @RequestMapping(path = "/weixin")
 @Slf4j
 public class TokenController {
 
 	private static final String WEIXIN_ACCESS_TOKEN_URL = "https://api.weixin.qq.com/sns/oauth2/access_token";
-
-	private static final String WEIXIN_APP_ID = "wx22d16b90c898f61d";
-
-	private static final String WEIXIN_APP_SECRET = "ebf24940e789946ef53b05a70391c95b";
 
 	private static final Integer RESPONSE_OK = 200;
 

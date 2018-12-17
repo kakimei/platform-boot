@@ -24,4 +24,6 @@ public interface TimeResourceService {
 	Integer getEndHour(String timeString);
 
 	Integer getEndMinute(String timeString);
+
+	String getFormatTimeString(Integer beginHour, Integer beginMinute, Integer endHour, Integer endMinute);
 }

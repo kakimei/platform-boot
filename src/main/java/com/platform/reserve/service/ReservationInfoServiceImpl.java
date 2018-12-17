@@ -40,12 +40,13 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void save(ReservationInfoDto reservationInfoDto) {
+	public Long save(ReservationInfoDto reservationInfoDto) {
 		if (reservationInfoDto.getReservationInfoId() != null) {
 			update(reservationInfoDto);
-			return;
+			return reservationInfoDto.getReservationInfoId();
 		}
-		reservationInfoRepository.save(reserveDtoTransferBuilder.toEntity(reservationInfoDto));
+		ReservationInfo saved = reservationInfoRepository.save(reserveDtoTransferBuilder.toEntity(reservationInfoDto));
+		return saved.getReservationInfoId();
 	}
 
 	@Override

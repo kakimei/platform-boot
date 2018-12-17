@@ -59,6 +59,8 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 
 	public static final Pattern TIME_PATTERN = Pattern.compile(TIME_FORMAT);
 
+	private static final String TIME_STRING_FORMAT = "%s:%s ~ %s:%s";
+
 	@Override
 	public TimeResourceDto buildTimeResourceDto() {
 		try {
@@ -301,5 +303,24 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 			result.add(timeDTO1);
 		}
 		return result;
+	}
+
+	@Override
+	public String getFormatTimeString(Integer beginHour, Integer beginMinute, Integer endHour, Integer endMinute) {
+		return String.format(TIME_STRING_FORMAT,
+			formatTimeNumber(beginHour),
+			formatTimeNumber(beginMinute),
+			formatTimeNumber(endHour),
+			formatTimeNumber(endMinute));
+	}
+
+	private String formatTimeNumber(Integer timeNumber) {
+		if (timeNumber == null) {
+			return "00";
+		} else if (timeNumber < 10) {
+			return "0" + String.valueOf(timeNumber);
+		} else {
+			return String.valueOf(timeNumber);
+		}
 	}
 }
