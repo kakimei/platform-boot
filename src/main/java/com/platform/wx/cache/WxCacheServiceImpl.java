@@ -16,7 +16,7 @@ import java.io.IOException;
 @Slf4j
 public class WxCacheServiceImpl {
 
-	private String access_token = null;
+	private String access_token = "";
 
 	public static final String WEIXIN_APP_ID = "wx22d16b90c898f61d";
 
