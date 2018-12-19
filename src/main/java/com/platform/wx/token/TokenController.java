@@ -31,6 +31,7 @@ public class TokenController {
 	@RequestMapping(path = "/userInfo/get", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
 	public @ResponseBody
 	WxVO confirmToken(@RequestParam String code) {
+		log.info("code : {}", code);
 		CloseableHttpClient httpCilent = HttpClients.createDefault();
 		String accessTokenRrl =
 			WEIXIN_ACCESS_TOKEN_URL + "?appid=" + WEIXIN_APP_ID + "&secret=" + WEIXIN_APP_SECRET + "&code=" + code + "&grant_type=authorization_code";
