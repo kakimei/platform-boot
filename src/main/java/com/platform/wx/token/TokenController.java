@@ -40,6 +40,7 @@ public class TokenController {
 			HttpResponse httpResponse = httpCilent.execute(httpGet);
 			if (httpResponse.getStatusLine().getStatusCode() == RESPONSE_OK) {
 				String srtResult = EntityUtils.toString(httpResponse.getEntity());
+				log.info("the str result is : {}", srtResult);
 				JSONObject jsonObject = new JSONObject(srtResult);
 				return WxVO.builder()
 					.openid(jsonObject.getString("openid"))
