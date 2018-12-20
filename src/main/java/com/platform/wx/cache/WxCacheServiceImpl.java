@@ -26,7 +26,7 @@ public class WxCacheServiceImpl {
 
 	private static final Integer RESPONSE_OK = 200;
 
-//	@Scheduled(initialDelay = 1L, fixedDelay = 7000000L)
+	@Scheduled(initialDelay = 1L, fixedDelay = 7000000L)
 	public void initAccessToken(){
 		CloseableHttpClient httpCilent = HttpClients.createDefault();
 		String commonAccessToken = COMMON_ACCESS_TOKEN_URL + "&appid=" + WEIXIN_APP_ID + "&secret=" + WEIXIN_APP_SECRET;
