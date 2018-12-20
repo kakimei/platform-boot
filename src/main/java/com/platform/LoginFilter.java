@@ -16,6 +16,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -47,7 +48,12 @@ public class LoginFilter implements Filter {
 			return;
 		}
 		log.info("------------request uri------------:"+((HttpServletRequest) servletRequest).getRequestURI());
-		log.info("------------parameters------------:"+((HttpServletRequest) servletRequest).getParameterNames().toString());
+		log.info("------------parameters------------:");
+		Map<String, String[]> parameterMap = servletRequest.getParameterMap();
+		for(Map.Entry<String, String[]> entry : parameterMap.entrySet()){
+			log.info("{} : {}", entry.getKey(), entry.getValue());
+		}
+		log.info("------------parameters end------------:");
 		String openId = request.getParameter("openId");
 		log.info("------------openId--------------:"+openId);
 		String user = userService.check(openId);
