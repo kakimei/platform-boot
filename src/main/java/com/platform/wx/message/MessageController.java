@@ -54,8 +54,7 @@ public class MessageController {
 		@RequestParam(name = "template_id") String templateId,
 		@RequestParam(name = "action") String action,
 		@RequestParam(name = "scene") String scene,
-		@RequestParam(name = "reservationInfoId") String reservationInfoId,
-		@RequestParam(name = "redirectUrl") String redirectUrl) {
+		@RequestParam(name = "reservationInfoId") String reservationInfoId) {
 		if(CONFIRM.equals(action)){
 
 			String sendWxMessageUrl = SEND_WX_MESSAGE_URL + wxCacheService.getCommonAccessToken();
