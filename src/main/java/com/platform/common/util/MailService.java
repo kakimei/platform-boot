@@ -22,7 +22,7 @@ public class MailService {
 	@Value("#{environment['mail.password']}")
 	private String password;
 
-	@Async
+//	@Async
 	public void sendMail(String sendTo, String subject, String text, SendMailCallback sendMailCallback) throws EmailException{
 		try {
 			Email email = getEmail();
