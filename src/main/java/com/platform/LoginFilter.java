@@ -47,7 +47,7 @@ public class LoginFilter implements Filter {
 			filterChain.doFilter(servletRequest, servletResponse);
 			return;
 		}
-		log.info("------------request uri------------:"+((HttpServletRequest) servletRequest).getRequestURI());
+		log.info("------------request url------------:"+request.getRequestURL().toString());
 		log.info("------------parameters------------:");
 		Map<String, String[]> parameterMap = servletRequest.getParameterMap();
 		for(Map.Entry<String, String[]> entry : parameterMap.entrySet()){
