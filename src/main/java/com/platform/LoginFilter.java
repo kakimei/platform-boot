@@ -54,7 +54,7 @@ public class LoginFilter implements Filter {
 			log.info("{} : {}", entry.getKey(), entry.getValue());
 		}
 		log.info("------------parameters end------------:");
-		String openId = request.getParameter("openId");
+		String openId = request.getParameter("openid");
 		log.info("------------openId--------------:"+openId);
 		String user = userService.check(openId);
 		if(StringUtils.isNotBlank(user)){
