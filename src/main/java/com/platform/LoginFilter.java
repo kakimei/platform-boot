@@ -46,6 +46,8 @@ public class LoginFilter implements Filter {
 			filterChain.doFilter(servletRequest, servletResponse);
 			return;
 		}
+		log.info("------------request uri------------:"+((HttpServletRequest) servletRequest).getRequestURI());
+		log.info("------------parameters------------:"+((HttpServletRequest) servletRequest).getParameterNames().toString());
 		String openId = request.getParameter("openId");
 		String user = userService.check(openId);
 		if(StringUtils.isNotBlank(user)){
