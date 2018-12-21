@@ -33,7 +33,7 @@ public class MessageController {
 	private static final Integer RESPONSE_OK = 200;
 	private static final String SEND_WX_MESSAGE_URL = "https://api.weixin.qq.com/cgi-bin/message/template/subscribe?access_token=";
 
-	private static final String RESERVATION_DETAIL = "http://yp.compass-trip.com/reservationModify.html?reservationInfoId=";
+	private static final String RESERVATION_DETAIL = "http://www.smart-boot.com/reservationModify.html?reservationInfoId=";
 
 	private static final String MESSAGE_TITLE = "恭喜您，预定成功！";
 
