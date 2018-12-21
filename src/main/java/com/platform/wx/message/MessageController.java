@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 
 @RestController
@@ -34,6 +36,8 @@ public class MessageController {
 	private static final String SEND_WX_MESSAGE_URL = "https://api.weixin.qq.com/cgi-bin/message/template/subscribe?access_token=";
 
 	private static final String RESERVATION_DETAIL = "http://www.smart-boot.com/reservationModify.html?reservationInfoId=";
+
+	private static final String RESERVATION_LIST = "http://www.smart-boot.com/reservationList.html?activityType=";
 
 	private static final String MESSAGE_TITLE = "恭喜您，预定成功！";
 
@@ -54,7 +58,9 @@ public class MessageController {
 		@RequestParam(name = "template_id") String templateId,
 		@RequestParam(name = "action") String action,
 		@RequestParam(name = "scene") String scene,
-		@RequestParam(name = "reservationInfoId") String reservationInfoId) {
+		@RequestParam(name = "reservationInfoId") String reservationInfoId,
+		HttpServletResponse httpServletResponse) {
+		ReservationInfoDto reservationInfoDto = reservationInfoService.findReservationInfoById(Long.valueOf(reservationInfoId));
 		if(CONFIRM.equals(action)){
 
 			String sendWxMessageUrl = SEND_WX_MESSAGE_URL + wxCacheService.getCommonAccessToken();
@@ -62,9 +68,7 @@ public class MessageController {
 			httpPost.setHeader("Content-type", "application/json");
 			String clickUrl = RESERVATION_DETAIL + reservationInfoId;
 			try(CloseableHttpClient httpCilent = HttpClients.createDefault()) {
-				String content = buildContent(reservationInfoId);
-				log.info("============message content:{}", content);
-				HttpEntity httpEntity = buildEntity(openId, templateId, clickUrl, scene, MESSAGE_TITLE, content, "BLUE");
+				HttpEntity httpEntity = buildEntity(openId, templateId, clickUrl, scene, MESSAGE_TITLE, buildContent(reservationInfoDto), "BLUE");
 				httpPost.setEntity(httpEntity);
 				HttpResponse httpResponse = httpCilent.execute(httpPost);
 				if (httpResponse.getStatusLine().getStatusCode() == RESPONSE_OK) {
@@ -81,16 +85,16 @@ public class MessageController {
 				log.error(e.getMessage());
 			}
 		}
-
+		try {
+			httpServletResponse.sendRedirect(RESERVATION_LIST+reservationInfoDto.getActivityType().name());
+		} catch (IOException e) {
+			log.warn("redirect error, {}", e.getMessage());
+		}
 	}
 
-	private String buildContent(String reservationInfoId) throws Exception {
-		if(StringUtils.isBlank(reservationInfoId)){
-			throw new Exception("reservation id is null.");
-		}
-		ReservationInfoDto reservationInfoDto = reservationInfoService.findReservationInfoById(Long.valueOf(reservationInfoId));
+	private String buildContent(ReservationInfoDto reservationInfoDto) throws Exception {
 		if(reservationInfoDto == null){
-			throw new Exception("reservation does not exist. reservation id: " + reservationInfoId);
+			throw new Exception("reservation is null.");
 		}
 		return String.format(MESSAGE_CONTENT,
 			reservationInfoDto.getLinkManName(),
