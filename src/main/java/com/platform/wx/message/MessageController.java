@@ -68,7 +68,7 @@ public class MessageController {
 			httpPost.setHeader("Content-type", "application/json");
 			String clickUrl = RESERVATION_DETAIL + reservationInfoId;
 			try(CloseableHttpClient httpCilent = HttpClients.createDefault()) {
-				HttpEntity httpEntity = buildEntity(openId, templateId, clickUrl, scene, MESSAGE_TITLE, buildContent(reservationInfoDto), "BLUE");
+				HttpEntity httpEntity = buildEntity(openId, templateId, clickUrl, scene, MESSAGE_TITLE, buildContent(reservationInfoDto), "");
 				httpPost.setEntity(httpEntity);
 				HttpResponse httpResponse = httpCilent.execute(httpPost);
 				if (httpResponse.getStatusLine().getStatusCode() == RESPONSE_OK) {
