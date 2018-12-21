@@ -136,7 +136,7 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
 			log.warn("activityType is null.");
 			return result;
 		}
-		List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByActivityTypeAndDeletedFalseOrderByReservationInfoId(ActivityType.valueOf(activityType));
+		List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByActivityTypeAndDeletedFalseOrderByReservationInfoIdDesc(ActivityType.valueOf(activityType));
 		if (CollectionUtils.isEmpty(reservationInfoList)) {
 			return result;
 		}
@@ -158,7 +158,7 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
 			log.warn("userName is null.");
 			return result;
 		}
-		List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByUserNameAndDeletedFalseOrderByReservationInfoId(userName);
+		List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByUserNameAndDeletedFalseOrderByReservationInfoIdDesc(userName);
 		if (CollectionUtils.isEmpty(reservationInfoList)) {
 			return result;
 		}
