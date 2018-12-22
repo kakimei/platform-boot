@@ -66,7 +66,7 @@ public class MessageController {
 			String sendWxMessageUrl = SEND_WX_MESSAGE_URL + wxCacheService.getCommonAccessToken();
 			HttpPost httpPost = new HttpPost(sendWxMessageUrl);
 			httpPost.setHeader("Content-type", "application/json");
-			String clickUrl = RESERVATION_DETAIL + reservationInfoId;
+			String clickUrl = RESERVATION_DETAIL + reservationInfoId + "&openid=" + openId;
 			try(CloseableHttpClient httpCilent = HttpClients.createDefault()) {
 				HttpEntity httpEntity = buildEntity(openId, templateId, clickUrl, scene, MESSAGE_TITLE, buildContent(reservationInfoDto), "");
 				httpPost.setEntity(httpEntity);
