@@ -41,7 +41,7 @@ public class MessageController {
 
 	private static final String MESSAGE_TITLE = "恭喜您，预定成功！";
 
-	private static final String MESSAGE_CONTENT = "预定信息：\n联系人:%s\n预定类型:%s\n预定人数:%s\n联系人电话:%s\n预定日:%s\n预定时间段:%s";
+	private static final String MESSAGE_CONTENT = "预定信息：\n联系人：%s\n预定类型：%s\n预定人数：%s\n联系人电话：%s\n预定日：%s\n预定时间段：%s";
 
 	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
 	@Autowired
