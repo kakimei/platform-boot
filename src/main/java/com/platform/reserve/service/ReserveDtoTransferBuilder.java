@@ -11,6 +11,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
 @Service
 @Slf4j
 public class ReserveDtoTransferBuilder {
@@ -43,6 +47,9 @@ public class ReserveDtoTransferBuilder {
 		}
 		ReservationInfoDto reservationInfoDto = new ReservationInfoDto();
 		BeanUtils.copyProperties(reservationInfo, reservationInfoDto);
+		LocalDate localDate = LocalDateTime.ofInstant(reservationInfo.getReserveDate().toInstant(), ZoneId.systemDefault()).toLocalDate();
+		localDate.
+		reservationInfoDto.setYearWeek();
 		return reservationInfoDto;
 	}
 

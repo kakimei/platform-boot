@@ -42,6 +42,10 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 	@Value("#{environment['valid.resource.time.offset']}")
 	private String dayOffset;
 
+	@Value("#{environment['week.single.max']}")
+	private String weekSingleMax;
+
+
 	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
 
 	@Autowired
@@ -263,6 +267,7 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 
 	private void removeReservedDateTimeFromMap(List<ReservationInfoDto> reservedList, Map<String, List<TimeResourceDto.TimeDTO>> map,
 		MetaType metaType) {
+		reservedList.stream().filter(reservationInfoDto -> reservationInfoDto.get)
 		for (ReservationInfoDto reservationInfoDto : reservedList) {
 			List<TimeResourceDto.TimeDTO> timeDTOList = map.get(SDF.format(reservationInfoDto.getReserveDate()));
 			if (CollectionUtils.isEmpty(timeDTOList)) {
