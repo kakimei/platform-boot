@@ -1,5 +1,6 @@
 package com.platform.reserve.service;
 
+import com.platform.common.util.DateUtils;
 import com.platform.reserve.controller.vo.ReserveVO;
 import com.platform.reserve.repository.entity.ActivityType;
 import com.platform.reserve.repository.entity.ReservationInfo;
@@ -21,6 +22,9 @@ public class ReserveDtoTransferBuilder {
 
 	@Autowired
 	private TimeResourceService timeResourceService;
+
+	@Autowired
+	private DateUtils dateUtils;
 
 	public ReservationInfoDto toDto(ReserveVO reserveVO) {
 		if (reserveVO == null) {
@@ -48,8 +52,8 @@ public class ReserveDtoTransferBuilder {
 		ReservationInfoDto reservationInfoDto = new ReservationInfoDto();
 		BeanUtils.copyProperties(reservationInfo, reservationInfoDto);
 		LocalDate localDate = LocalDateTime.ofInstant(reservationInfo.getReserveDate().toInstant(), ZoneId.systemDefault()).toLocalDate();
-		localDate.
-		reservationInfoDto.setYearWeek();
+
+		reservationInfoDto.setYearWeek(dateUtils.getFormatDateString(localDate, "yyyy_ww"));
 		return reservationInfoDto;
 	}
 

@@ -267,7 +267,8 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 
 	private void removeReservedDateTimeFromMap(List<ReservationInfoDto> reservedList, Map<String, List<TimeResourceDto.TimeDTO>> map,
 		MetaType metaType) {
-		reservedList.stream().filter(reservationInfoDto -> reservationInfoDto.get)
+		Map<String, Integer> weekGroupPeopleCount = reservedList.stream().collect(
+			Collectors.groupingBy(ReservationInfoDto::getYearWeek, Collectors.summingInt(ReservationInfoDto::getPeopleCount)));
 		for (ReservationInfoDto reservationInfoDto : reservedList) {
 			List<TimeResourceDto.TimeDTO> timeDTOList = map.get(SDF.format(reservationInfoDto.getReserveDate()));
 			if (CollectionUtils.isEmpty(timeDTOList)) {
@@ -276,11 +277,13 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 
 			if (MetaType.SINGLE.equals(metaType)) {
 				Integer peopleCount = reservationInfoDto.getPeopleCount();
+				Integer weekHasUsed = weekGroupPeopleCount.get(reservationInfoDto.getYearWeek());
+				Integer weekRemained = Integer.valueOf(weekSingleMax) - weekHasUsed;
 				timeDTOList = calculateTimeList(timeDTOList, reservationInfoDto.getReserveBeginHH(), reservationInfoDto.getReserveBeginMM(),
-					reservationInfoDto.getReserveEndHH(), reservationInfoDto.getReserveEndMM(), peopleCount);
+					reservationInfoDto.getReserveEndHH(), reservationInfoDto.getReserveEndMM(), peopleCount, weekRemained);
 			} else {
 				timeDTOList = calculateTimeList(timeDTOList, reservationInfoDto.getReserveBeginHH(), reservationInfoDto.getReserveBeginMM(),
-					reservationInfoDto.getReserveEndHH(), reservationInfoDto.getReserveEndMM(), 1);
+					reservationInfoDto.getReserveEndHH(), reservationInfoDto.getReserveEndMM(), 1, null);
 			}
 			if (CollectionUtils.isEmpty(timeDTOList)) {
 				map.remove(SDF.format(reservationInfoDto.getReserveDate()));
@@ -292,7 +295,7 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 
 	private List<TimeResourceDto.TimeDTO> calculateTimeList(List<TimeResourceDto.TimeDTO> timeDTOList, Integer beginHour, Integer beginMinute,
 		Integer endHour,
-		Integer endMinute, Integer times) {
+		Integer endMinute, Integer times, Integer globalRemained) {
 		List<TimeResourceDto.TimeDTO> result = new ArrayList<>();
 		for (TimeResourceDto.TimeDTO timeDTO : timeDTOList) {
 			TimeResourceDto.TimeDTO timeDTO1 = new TimeResourceDto.TimeDTO(timeDTO.getBeginHour(), timeDTO.getBeginMinute(), timeDTO.getEndHour(),
@@ -300,6 +303,9 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 			if (timeDTO1.getBeginHour() == beginHour && timeDTO1.getBeginMinute() == beginMinute && timeDTO1.getEndHour() == endHour
 				&& timeDTO1.getEndMinute() == endMinute) {
 				Integer remainTimes = timeDTO1.getTimes() - times;
+				if(globalRemained != null) {
+					remainTimes = remainTimes < globalRemained ? remainTimes : globalRemained;
+				}
 				if (remainTimes <= 0) {
 					continue;
 				}
