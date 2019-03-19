@@ -279,6 +279,7 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 				Integer peopleCount = reservationInfoDto.getPeopleCount();
 				Integer weekHasUsed = weekGroupPeopleCount.get(reservationInfoDto.getYearWeek());
 				Integer weekRemained = Integer.valueOf(weekSingleMax) - weekHasUsed;
+				log.info("weekRemained: {}", weekRemained);
 				timeDTOList = calculateTimeList(timeDTOList, reservationInfoDto.getReserveBeginHH(), reservationInfoDto.getReserveBeginMM(),
 					reservationInfoDto.getReserveEndHH(), reservationInfoDto.getReserveEndMM(), peopleCount, weekRemained);
 			} else {
@@ -305,6 +306,7 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 				Integer remainTimes;
 				// Single
 				if(globalRemained != null){
+					log.info("timeDTO1.getTimes(): {}", timeDTO1.getTimes());
 					remainTimes = timeDTO1.getTimes() < globalRemained ? timeDTO1.getTimes() : globalRemained;
 				}else{
 					//Team
