@@ -302,9 +302,13 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 				timeDTO.getEndMinute(), timeDTO.getTimes());
 			if (timeDTO1.getBeginHour() == beginHour && timeDTO1.getBeginMinute() == beginMinute && timeDTO1.getEndHour() == endHour
 				&& timeDTO1.getEndMinute() == endMinute) {
-				Integer remainTimes = timeDTO1.getTimes() - times;
-				if(globalRemained != null) {
-					remainTimes = remainTimes < globalRemained ? remainTimes : globalRemained;
+				Integer remainTimes;
+				// Single
+				if(globalRemained != null){
+					remainTimes = timeDTO1.getTimes() < globalRemained ? timeDTO1.getTimes() : globalRemained;
+				}else{
+					//Team
+					remainTimes = timeDTO1.getTimes() - times;
 				}
 				if (remainTimes <= 0) {
 					continue;
