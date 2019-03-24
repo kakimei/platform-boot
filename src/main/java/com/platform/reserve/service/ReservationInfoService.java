@@ -29,9 +29,9 @@ public interface ReservationInfoService {
 
 	List<ReservationInfoDto> findAllActiveSingleReservationInfo();
 
-	ReservationInfoDto cancel(String user, Long reservationInfoId);
+	ReservationInfoDto cancel(String user, Long reservationInfoId) throws Exception;
 
-	ReservationInfoDto cancel(Long reservationInfoId);
+	ReservationInfoDto cancel(Long reservationInfoId) throws Exception;
 
 	List<ReservationInfoDto> findReservationInfoByDateAndTime(Date reserveDate, String timeString);
 

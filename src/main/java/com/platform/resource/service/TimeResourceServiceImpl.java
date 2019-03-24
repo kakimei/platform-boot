@@ -404,7 +404,8 @@ public class TimeResourceServiceImpl implements TimeResourceService {
         }
         Integer remainTimes = timeResource.getRemainTimes();
         if(activityType.isTeam()) {
-            timeResource.setRemainTimes(remainTimes - 1);
+            Integer value = peopleCount < 0 ? -1 : 1;
+            timeResource.setRemainTimes(remainTimes - value);
             timeResourceRepository.save(timeResource);
         }else{
             if(remainTimes < peopleCount){

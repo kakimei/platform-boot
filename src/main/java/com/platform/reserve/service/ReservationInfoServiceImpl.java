@@ -231,37 +231,59 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public ReservationInfoDto cancel(String user, Long reservationInfoId) {
+    public ReservationInfoDto cancel(String user, Long reservationInfoId) throws Exception {
         if (StringUtils.isBlank(user) || reservationInfoId == null || reservationInfoId == 0L) {
             log.warn("user or reservationInfoId is null.");
             return null;
         }
         ReservationInfo reservationInfo = reservationInfoRepository.findByReservationInfoIdAndUserNameAndDeletedFalse(
                 reservationInfoId, user);
-        if (reservationInfo == null) {
-            log.warn("the reservation does not exist. user : {}, reservationInfoId : {}", user, reservationInfoId);
-            return null;
+        try {
+            return cancel(reservationInfo);
+        } catch (Exception e) {
+            log.error("save failed. cause{}", e.getMessage());
+            throw e;
         }
-        reservationInfo.setDeleted(true);
-        ReservationInfo saved = reservationInfoRepository.save(reservationInfo);
-        return reserveDtoTransferBuilder.toDto(saved);
     }
 
     @Override
-    public ReservationInfoDto cancel(Long reservationInfoId) {
+    @Transactional(propagation = Propagation.REQUIRED)
+    public ReservationInfoDto cancel(Long reservationInfoId) throws Exception {
         if (reservationInfoId == null || reservationInfoId == 0L) {
             log.warn("reservationInfoId is null.");
             return null;
         }
         ReservationInfo reservationInfo = reservationInfoRepository.findByReservationInfoIdAndDeletedFalse(
                 reservationInfoId);
+        try {
+            return cancel(reservationInfo);
+        } catch (Exception e) {
+            log.error("save failed. cause{}", e.getMessage());
+            throw e;
+        }
+    }
+
+    private ReservationInfoDto cancel(ReservationInfo reservationInfo) throws Exception{
         if (reservationInfo == null) {
-            log.warn("the reservation does not exist. reservationInfoId : {}", reservationInfoId);
+            log.warn("the reservation does not exist.");
             return null;
         }
-        reservationInfo.setDeleted(true);
-        ReservationInfo saved = reservationInfoRepository.save(reservationInfo);
-        return reserveDtoTransferBuilder.toDto(saved);
+        try {
+            timeResourceService.updateRemainedTimes(
+                    reservationInfo.getReserveDate(),
+                    reservationInfo.getReserveBeginHH(),
+                    reservationInfo.getReserveBeginMM(),
+                    reservationInfo.getReserveEndHH(),
+                    reservationInfo.getReserveEndMM(),
+                    reservationInfo.getActivityType(),
+                    -reservationInfo.getPeopleCount());
+            reservationInfo.setDeleted(true);
+            ReservationInfo saved = reservationInfoRepository.save(reservationInfo);
+            return reserveDtoTransferBuilder.toDto(saved);
+        } catch (Exception e) {
+            log.error("save failed. cause{}", e.getMessage());
+            throw e;
+        }
     }
 
     @Override
