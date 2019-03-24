@@ -425,7 +425,7 @@ public class TimeResourceServiceImpl implements TimeResourceService {
                     Date.from(endDayOfWeek.atZone(ZoneId.systemDefault()).toInstant()));
             final Integer weekRemained = (CollectionUtils.isEmpty(hasUsed) ? Integer.valueOf(weekSingleMax) : (Integer.valueOf(weekSingleMax) - hasUsed.stream().collect(Collectors.summingInt(reservationInfo -> reservationInfo.getPeopleCount())))) - peopleCount;
 
-            if(weekRemained <= 0){
+            if(weekRemained < 0){
                 log.warn("the week time resource not enough. {}, {}, {}, {}, {}, {}, weekRemained {}, request: {}", activityType.name(), reserveDate, reserveBeginHH, reserveBeginMM, reserveEndHH, reserveEndMM, weekRemained + peopleCount, peopleCount);
                 throw new TimeResourceNotEnoughException("the week time resource not enough.");
             }
