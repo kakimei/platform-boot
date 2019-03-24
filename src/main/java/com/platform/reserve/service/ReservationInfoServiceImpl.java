@@ -40,13 +40,27 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public Long save(ReservationInfoDto reservationInfoDto) {
+	public Long save(ReservationInfoDto reservationInfoDto) throws Exception{
 		if (reservationInfoDto.getReservationInfoId() != null) {
 			update(reservationInfoDto);
 			return reservationInfoDto.getReservationInfoId();
 		}
-		ReservationInfo saved = reservationInfoRepository.save(reserveDtoTransferBuilder.toEntity(reservationInfoDto));
-		return saved.getReservationInfoId();
+
+		try {
+			timeResourceService.updateRemainedTimes(
+					reservationInfoDto.getReserveDate(),
+					reservationInfoDto.getReserveBeginHH(),
+					reservationInfoDto.getReserveBeginMM(),
+					reservationInfoDto.getReserveEndHH(),
+					reservationInfoDto.getReserveEndMM(),
+					reservationInfoDto.getActivityType(),
+					reservationInfoDto.getPeopleCount());
+			ReservationInfo saved = reservationInfoRepository.save(reserveDtoTransferBuilder.toEntity(reservationInfoDto));
+			return saved.getReservationInfoId();
+		}catch (Exception e) {
+			log.error("save failed. cause{}", e.getMessage());
+			throw e;
+		}
 	}
 
 	@Override

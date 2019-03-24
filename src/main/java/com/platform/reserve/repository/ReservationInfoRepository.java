@@ -35,4 +35,6 @@ public interface ReservationInfoRepository extends JpaRepository<ReservationInfo
 	List<ReservationInfo> findByReservationInfoIdInAndDeletedFalse(List<Long> reservationInfoIdList);
 
 	List<ReservationInfo> findByReserveDateAndDeletedFalse(Date reserveDate);
+
+	List<ReservationInfo> findByActivityTypeAndReserveDateBetweenAndDeletedFalse(ActivityType activityType, Date beginDate, Date endDate);
 }

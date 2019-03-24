@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ReservationInfoService {
 
-	Long save(ReservationInfoDto reservationInfoDto);
+	Long save(ReservationInfoDto reservationInfoDto) throws Exception;
 
 	void update(ReservationInfoDto reservationInfoDto);
 

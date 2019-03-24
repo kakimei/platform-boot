@@ -13,12 +13,9 @@ import com.platform.reserve.service.ReserveDtoTransferBuilder;
 import com.platform.reserve.service.dto.ReservationInfoDto;
 import com.platform.resource.repository.entity.MetaType;
 import com.platform.resource.service.TimeResourceService;
-import com.platform.sign.service.SignReservationInfoService;
-import com.platform.sign.service.dto.SignReservationInfoDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.commons.mail.EmailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -44,9 +41,6 @@ public class ReserveFacade {
 
 	@Autowired
 	private TimeResourceService timeResourceService;
-
-	@Autowired
-	private SignReservationInfoService signReservationInfoService;
 
 	@Autowired
 	private ReservationInfoService reservationInfoService;
@@ -83,7 +77,7 @@ public class ReserveFacade {
 					Long reservationId = reservationInfoService.save(reserveDtoTransferBuilder.toDto(reserveVO));
 					reserveVO.setReservationInfoId(reservationId);
 				});
-		} catch (EmailException | ReserveException e) {
+		} catch (Exception e){
 			log.error(e.getMessage(), e);
 			return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.FAIL).entity(reserveVO).build();
 		}
@@ -99,7 +93,7 @@ public class ReserveFacade {
 			}
 			mailService.sendMail(emailReceiver, emailSubject, buildEmailContent(reserveVO, emailContentPlatform),
 				() -> reservationInfoService.update(reserveDtoTransferBuilder.toDto(reserveVO)));
-		} catch (EmailException | ReserveException e) {
+		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.FAIL).entity(reserveVO).build();
 		}

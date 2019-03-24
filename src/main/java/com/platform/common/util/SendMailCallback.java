@@ -2,6 +2,6 @@ package com.platform.common.util;
 
 public interface SendMailCallback {
 
-	void execute();
+	void execute() throws Exception;
 
 }

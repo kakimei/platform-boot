@@ -23,17 +23,20 @@ public class MailService {
 	private String password;
 
 //	@Async
-	public void sendMail(String sendTo, String subject, String text, SendMailCallback sendMailCallback) throws EmailException{
+	public void sendMail(String sendTo, String subject, String text, SendMailCallback sendMailCallback) throws Exception{
 		try {
+			sendMailCallback.execute();
 			Email email = getEmail();
 			email.setSubject(subject);
 			email.setMsg(text);
 			email.addTo(sendTo);
 			String messageId = email.send();
 			log.info("send success. message id:{}, target email:{}, subject:{}, content:{}", messageId, sendTo, subject, text);
-			callback(messageId, sendMailCallback);
 		}catch (EmailException e){
 			log.error("send email failed. {}", e);
+			throw e;
+		}catch (Exception e){
+			log.error("save failed. {}", e.getMessage());
 			throw e;
 		}
 	}
@@ -47,11 +50,5 @@ public class MailService {
 		email.setFrom(userName);
 		email.setCharset("UTF-8");
 		return email;
-	}
-
-	private void callback(String messageId, SendMailCallback sendMailCallback){
-		if(StringUtils.isNoneBlank(messageId)){
-			sendMailCallback.execute();
-		}
 	}
 }

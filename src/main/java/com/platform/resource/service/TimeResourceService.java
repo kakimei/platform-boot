@@ -1,5 +1,6 @@
 package com.platform.resource.service;
 
+import com.platform.reserve.repository.entity.ActivityType;
 import com.platform.resource.repository.entity.MetaType;
 import com.platform.resource.service.dto.TimeResourceDto;
 
@@ -26,4 +27,6 @@ public interface TimeResourceService {
 	Integer getEndMinute(String timeString);
 
 	String getFormatTimeString(Integer beginHour, Integer beginMinute, Integer endHour, Integer endMinute);
+
+	void updateRemainedTimes(Date reserveDate, Integer reserveBeginHH, Integer reserveBeginMM, Integer reserveEndHH, Integer reserveEndMM, ActivityType activityType, Integer peopleCount) throws Exception;
 }
