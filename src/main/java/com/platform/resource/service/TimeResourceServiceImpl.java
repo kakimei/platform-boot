@@ -43,6 +43,8 @@ public class TimeResourceServiceImpl implements TimeResourceService {
     @Value("#{environment['week.single.max']}")
     private String weekSingleMax;
 
+    @Value("#{environment['people.number.threshold']}")
+    private int peopleNumberThreshold;
 
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -429,8 +431,11 @@ public class TimeResourceServiceImpl implements TimeResourceService {
             }
 
             timeResourceList.forEach(timeResource1 -> {
-                if(weekRemained < timeResource1.getRemainTimes()){
+                if(weekRemained < peopleNumberThreshold){
                     timeResource1.setRemainTimes(weekRemained);
+                }
+                if(weekRemained > peopleNumberThreshold){
+                    timeResource1.setRemainTimes(peopleNumberThreshold);
                 }
             });
             timeResourceRepository.save(timeResourceList);

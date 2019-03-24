@@ -9,7 +9,7 @@ public interface ReservationInfoService {
 
 	Long save(ReservationInfoDto reservationInfoDto) throws Exception;
 
-	void update(ReservationInfoDto reservationInfoDto);
+	void update(ReservationInfoDto reservationInfoDto) throws Exception;
 
 	ReservationInfoDto findReservationInfoByIdAndUser(String user, Long reservationInfoId);
 
