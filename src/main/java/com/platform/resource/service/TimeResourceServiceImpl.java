@@ -397,7 +397,13 @@ public class TimeResourceServiceImpl implements TimeResourceService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public void updateRemainedTimes(Date reserveDate, Integer reserveBeginHH, Integer reserveBeginMM, Integer reserveEndHH, Integer reserveEndMM, ActivityType activityType, Integer peopleCount) throws Exception{
-        TimeResource timeResource = timeResourceRepository.findByMetaTypeAndReservableDateAndHourBeginAndMinuteBeginAndAndHourEndAndMinuteEndAndRemainTimesGreaterThan(MetaType.valueOf(activityType.name()), reserveDate, reserveBeginHH, reserveBeginMM, reserveEndHH, reserveEndMM, 0);
+        Integer optionTimes = 0;
+        if(activityType.isTeam()){
+            optionTimes = peopleCount > 0 ? 0 : -1;
+        }else{
+            optionTimes = peopleCount;
+        }
+        TimeResource timeResource = timeResourceRepository.findByMetaTypeAndReservableDateAndHourBeginAndMinuteBeginAndAndHourEndAndMinuteEndAndRemainTimesGreaterThan(MetaType.valueOf(activityType.name()), reserveDate, reserveBeginHH, reserveBeginMM, reserveEndHH, reserveEndMM, optionTimes);
         if(timeResource == null){
             log.error("the time resource does not exist. {}, {}, {}, {}, {}, {}", activityType.name(), reserveDate, reserveBeginHH, reserveBeginMM, reserveEndHH, reserveEndMM);
             throw new TimeResourceNotExistException("the time resource does not exist.");
