@@ -241,20 +241,32 @@ public class ReserveFacade {
 
 	public Response<ReserveVO> cancel(Request<ReserveVO> request) {
 		ReserveVO reserveVO = request.getEntity();
-		ReservationInfoDto reservationInfoDto = reservationInfoService.cancel(reserveVO.getUserName(), reserveVO.getReservationInfoId());
-		if (reservationInfoDto == null) {
+		ReservationInfoDto reservationInfoDto = null;
+		try {
+			reservationInfoDto = reservationInfoService.cancel(reserveVO.getUserName(), reserveVO.getReservationInfoId());
+			if (reservationInfoDto == null) {
+				return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.FAIL).entity(reserveVO).build();
+			}
+		} catch (Exception e) {
 			return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.FAIL).entity(reserveVO).build();
 		}
+
 		return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.SUCCESS).entity(
 			reserveDtoTransferBuilder.toVO(reservationInfoDto)).build();
 	}
 
 	public Response<ReserveVO> cancelByBOUser(Request<ReserveVO> request) {
 		ReserveVO reserveVO = request.getEntity();
-		ReservationInfoDto reservationInfoDto = reservationInfoService.cancel(reserveVO.getReservationInfoId());
-		if (reservationInfoDto == null) {
+		ReservationInfoDto reservationInfoDto = null;
+		try {
+			reservationInfoDto = reservationInfoService.cancel(reserveVO.getReservationInfoId());
+			if (reservationInfoDto == null) {
+				return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.FAIL).entity(reserveVO).build();
+			}
+		} catch (Exception e) {
 			return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.FAIL).entity(reserveVO).build();
 		}
+
 		return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.SUCCESS).entity(
 			reserveDtoTransferBuilder.toVO(reservationInfoDto)).build();
 	}
