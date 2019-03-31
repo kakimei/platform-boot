@@ -329,12 +329,15 @@ public class TimeResourceServiceImpl implements TimeResourceService {
         TimeResourceDto timeResourceDto = buildTimeResourceDto();
         List<TimeResource> allTimeResource = timeResourceRepository.findAll();
         if (CollectionUtils.isEmpty(allTimeResource)) {
-            handleTimeResource(
+            addTimeResource(
                     timeResourceDto.getValidDateMapWeekForSINGLE(),
                     timeResourceDto.getValidDateMapWeekForTEAM(),
                     timeResourceDto.getValidDateMapDayForSINGLE(),
                     timeResourceDto.getValidDateMapDayForTEAM());
         } else {
+            LocalDate validStartDateForWeekSingle = timeResourceDto.getValidDateMapWeekForSINGLE().keySet().stream().sorted().findFirst().get();
+            LocalDate validStartDateForWeekTeam = timeResourceDto.getValidDateMapWeekForTEAM().keySet().stream().sorted().findFirst().get();
+
             LocalDate latestTeamReservableDate = LocalDateTime.ofInstant(timeResourceRepository.findFirstByMetaTypeAndActiveIsTrueOrderByReservableDateDesc(MetaType.TEAM).getReservableDate().toInstant(), ZoneId.systemDefault()).toLocalDate();
             LocalDate latestSingleReservableDate = LocalDateTime.ofInstant(timeResourceRepository.findFirstByMetaTypeAndActiveIsTrueOrderByReservableDateDesc(MetaType.SINGLE).getReservableDate().toInstant(), ZoneId.systemDefault()).toLocalDate();
             Map<LocalDate, List<TimeResourceDto.TimeDTO>> validDateMapWeekForSINGLE = timeResourceDto.getValidDateMapWeekForSINGLE();
@@ -345,27 +348,37 @@ public class TimeResourceServiceImpl implements TimeResourceService {
             validDateMapWeekForTEAM = filterAfterDate(validDateMapWeekForTEAM, latestTeamReservableDate);
             validDateMapDayForSINGLE = filterAfterDate(validDateMapDayForSINGLE, latestSingleReservableDate);
             validDateMapDayForTEAM = filterAfterDate(validDateMapDayForTEAM, latestTeamReservableDate);
-            handleTimeResource(validDateMapWeekForSINGLE, validDateMapWeekForTEAM, validDateMapDayForSINGLE, validDateMapDayForTEAM);
+            addTimeResource(validDateMapWeekForSINGLE, validDateMapWeekForTEAM, validDateMapDayForSINGLE, validDateMapDayForTEAM);
+            removeOverTimeResource(validStartDateForWeekSingle, validStartDateForWeekTeam);
         }
+    }
+
+    private void removeOverTimeResource(LocalDate validStartDateForWeekSingle, LocalDate validStartDateForWeekTeam) {
+        List<TimeResource> teamResource = timeResourceRepository.findByMetaTypeAndReservableDateBeforeAndActiveIsTrue(MetaType.TEAM, Date.from(validStartDateForWeekTeam.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        List<TimeResource> singleResource = timeResourceRepository.findByMetaTypeAndReservableDateBeforeAndActiveIsTrue(MetaType.SINGLE, Date.from(validStartDateForWeekSingle.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        teamResource.forEach(timeResource -> timeResource.setActive(false));
+        singleResource.forEach(timeResource -> timeResource.setActive(false));
+        timeResourceRepository.save(teamResource);
+        timeResourceRepository.save(singleResource);
     }
 
     private Map<LocalDate, List<TimeResourceDto.TimeDTO>> filterAfterDate(Map<LocalDate, List<TimeResourceDto.TimeDTO>> map, LocalDate localDate) {
         return map.entrySet().stream().filter(e -> e.getKey().isAfter(localDate)).collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
     }
 
-    private void handleTimeResource(Map<LocalDate, List<TimeResourceDto.TimeDTO>> validDateMapWeekForSINGLE,
-                                    Map<LocalDate, List<TimeResourceDto.TimeDTO>> validDateMapWeekForTEAM,
-                                    Map<LocalDate, List<TimeResourceDto.TimeDTO>> validDateMapDayForSINGLE,
-                                    Map<LocalDate, List<TimeResourceDto.TimeDTO>> validDateMapDayForTEAM) {
+    private void addTimeResource(Map<LocalDate, List<TimeResourceDto.TimeDTO>> validDateMapWeekForSINGLE,
+                                 Map<LocalDate, List<TimeResourceDto.TimeDTO>> validDateMapWeekForTEAM,
+                                 Map<LocalDate, List<TimeResourceDto.TimeDTO>> validDateMapDayForSINGLE,
+                                 Map<LocalDate, List<TimeResourceDto.TimeDTO>> validDateMapDayForTEAM) {
         List<TimeResource> readyToSave = new ArrayList<>();
-        readyToSave.addAll(handleTimeResource(validDateMapWeekForSINGLE, MetaType.SINGLE));
-        readyToSave.addAll(handleTimeResource(validDateMapWeekForTEAM, MetaType.TEAM));
-        readyToSave.addAll(handleTimeResource(validDateMapDayForSINGLE, MetaType.SINGLE));
-        readyToSave.addAll(handleTimeResource(validDateMapDayForTEAM, MetaType.TEAM));
+        readyToSave.addAll(addTimeResource(validDateMapWeekForSINGLE, MetaType.SINGLE));
+        readyToSave.addAll(addTimeResource(validDateMapWeekForTEAM, MetaType.TEAM));
+        readyToSave.addAll(addTimeResource(validDateMapDayForSINGLE, MetaType.SINGLE));
+        readyToSave.addAll(addTimeResource(validDateMapDayForTEAM, MetaType.TEAM));
         timeResourceRepository.save(readyToSave);
     }
 
-    private List<TimeResource> handleTimeResource(Map<LocalDate, List<TimeResourceDto.TimeDTO>> validDateMap, MetaType metaType) {
+    private List<TimeResource> addTimeResource(Map<LocalDate, List<TimeResourceDto.TimeDTO>> validDateMap, MetaType metaType) {
         List<TimeResource> readyToSave = new ArrayList<>();
         for (Map.Entry<LocalDate, List<TimeResourceDto.TimeDTO>> entry : validDateMap.entrySet()) {
             readyToSave.addAll(buildTimeResourceDB(entry.getKey(), entry.getValue(), metaType));
