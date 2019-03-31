@@ -7,6 +7,7 @@ import com.platform.reserve.repository.entity.ActivityType;
 import com.platform.reserve.repository.entity.ReservationInfo;
 import com.platform.reserve.service.dto.ReservationInfoDto;
 import com.platform.resource.service.TimeResourceService;
+import com.platform.sign.service.SignReservationInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -37,6 +38,9 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
 
     @Autowired
     private TimeResourceService timeResourceService;
+
+    @Autowired
+    private SignReservationInfoService signReservationInfoService;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
@@ -173,7 +177,9 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
             ReservationInfoDto reservationInfoDto = reserveDtoTransferBuilder.toDto(reservationInfo);
             List<FeedBack> feedBackList = feedBackRepository.findByUserNameAndReservationInfoId(userName,
                     reservationInfo.getReservationInfoId());
+            Boolean hasSigned = signReservationInfoService.hasSignedByReservationInfoIdAndUserName(reservationInfo.getReservationInfoId(), userName);
             reservationInfoDto.setHasFeedback(!CollectionUtils.isEmpty(feedBackList));
+            reservationInfoDto.setHasSigned(hasSigned);
             result.add(reservationInfoDto);
         });
         return result;

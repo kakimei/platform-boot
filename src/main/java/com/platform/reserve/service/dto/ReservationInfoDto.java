@@ -44,6 +44,8 @@ public class ReservationInfoDto {
 
 	private Boolean hasFeedback;
 
+	private Boolean hasSigned;
+
 	private String userName;
 
 	private String yearWeek;
