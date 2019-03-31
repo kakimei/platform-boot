@@ -15,4 +15,6 @@ public interface TimeResourceRepository extends JpaRepository<TimeResource, Long
     TimeResource findByMetaTypeAndReservableDateAndHourBeginAndMinuteBeginAndAndHourEndAndMinuteEndAndRemainTimesGreaterThan(MetaType metaType, Date reservableDate, Integer hourBegin, Integer minuteBegin, Integer hourEnd, Integer minuteEnd, Integer remainTimes);
 
     List<TimeResource> findByMetaTypeAndReservableDateBetween(MetaType metaType, Date beginDate, Date endDate);
+
+    List<TimeResource> findByMetaTypeAndReservableDateAndRemainTimesGreaterThan(MetaType metaType, Date reservableDate, Integer remainTimes);
 }

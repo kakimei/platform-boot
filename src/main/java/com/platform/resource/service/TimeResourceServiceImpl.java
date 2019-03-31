@@ -410,9 +410,9 @@ public class TimeResourceServiceImpl implements TimeResourceService {
         }
         Integer remainTimes = timeResource.getRemainTimes();
         if(activityType.isTeam()) {
-            Integer value = peopleCount < 0 ? -1 : 1;
-            timeResource.setRemainTimes(remainTimes - value);
-            timeResourceRepository.save(timeResource);
+            List<TimeResource> dayTimeResources = timeResourceRepository.findByMetaTypeAndReservableDateAndRemainTimesGreaterThan(MetaType.valueOf(activityType.name()), reserveDate, optionTimes);
+            dayTimeResources.forEach(timeResource1 -> timeResource1.setRemainTimes(timeResource1.getRemainTimes() - (peopleCount < 0 ? -1 : 1)));
+            timeResourceRepository.save(dayTimeResources);
         }else{
             if(remainTimes < peopleCount){
                 log.error("the time resource not enough. {}, {}, {}, {}, {}, {}, remained {}, request: {}", activityType.name(), reserveDate, reserveBeginHH, reserveBeginMM, reserveEndHH, reserveEndMM, remainTimes, peopleCount);
