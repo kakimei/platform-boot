@@ -8,13 +8,13 @@ import java.util.Date;
 import java.util.List;
 
 public interface TimeResourceRepository extends JpaRepository<TimeResource, Long> {
-    TimeResource findFirstByMetaTypeOrderByReservableDateDesc(MetaType metaType);
+    TimeResource findFirstByMetaTypeAndActiveIsTrueOrderByReservableDateDesc(MetaType metaType);
 
-    List<TimeResource> findByMetaTypeAndRemainTimesGreaterThanOrderByReservableDateAscHourBeginAsc(MetaType metaType, Integer remainTimes);
+    List<TimeResource> findByMetaTypeAndRemainTimesGreaterThanAndActiveIsTrueOrderByReservableDateAscHourBeginAsc(MetaType metaType, Integer remainTimes);
 
-    TimeResource findByMetaTypeAndReservableDateAndHourBeginAndMinuteBeginAndAndHourEndAndMinuteEndAndRemainTimesGreaterThan(MetaType metaType, Date reservableDate, Integer hourBegin, Integer minuteBegin, Integer hourEnd, Integer minuteEnd, Integer remainTimes);
+    TimeResource findByMetaTypeAndReservableDateAndHourBeginAndMinuteBeginAndAndHourEndAndMinuteEndAndRemainTimesGreaterThanAndActiveIsTrue(MetaType metaType, Date reservableDate, Integer hourBegin, Integer minuteBegin, Integer hourEnd, Integer minuteEnd, Integer remainTimes);
 
-    List<TimeResource> findByMetaTypeAndReservableDateBetween(MetaType metaType, Date beginDate, Date endDate);
+    List<TimeResource> findByMetaTypeAndReservableDateBetweenAndActiveIsTrue(MetaType metaType, Date beginDate, Date endDate);
 
-    List<TimeResource> findByMetaTypeAndReservableDateAndRemainTimesGreaterThan(MetaType metaType, Date reservableDate, Integer remainTimes);
+    List<TimeResource> findByMetaTypeAndReservableDateAndRemainTimesGreaterThanAndActiveIsTrue(MetaType metaType, Date reservableDate, Integer remainTimes);
 }

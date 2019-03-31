@@ -224,13 +224,13 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 
     @Override
     public List<Map.Entry<String, List<TimeResourceDto.TimeDTO>>> getTeamValidTimeResource() {
-        List<TimeResource> validTeamTimeResource = timeResourceRepository.findByMetaTypeAndRemainTimesGreaterThanOrderByReservableDateAscHourBeginAsc(MetaType.TEAM, 0);
+        List<TimeResource> validTeamTimeResource = timeResourceRepository.findByMetaTypeAndRemainTimesGreaterThanAndActiveIsTrueOrderByReservableDateAscHourBeginAsc(MetaType.TEAM, 0);
         return buildSortedList(validTeamTimeResource);
     }
 
     @Override
     public List<Map.Entry<String, List<TimeResourceDto.TimeDTO>>> getSingleValidTimeResource() {
-        List<TimeResource> validSingleTimeResource = timeResourceRepository.findByMetaTypeAndRemainTimesGreaterThanOrderByReservableDateAscHourBeginAsc(MetaType.SINGLE, 0);
+        List<TimeResource> validSingleTimeResource = timeResourceRepository.findByMetaTypeAndRemainTimesGreaterThanAndActiveIsTrueOrderByReservableDateAscHourBeginAsc(MetaType.SINGLE, 0);
         return buildSortedList(validSingleTimeResource);
     }
 
@@ -335,8 +335,8 @@ public class TimeResourceServiceImpl implements TimeResourceService {
                     timeResourceDto.getValidDateMapDayForSINGLE(),
                     timeResourceDto.getValidDateMapDayForTEAM());
         } else {
-            LocalDate latestTeamReservableDate = LocalDateTime.ofInstant(timeResourceRepository.findFirstByMetaTypeOrderByReservableDateDesc(MetaType.TEAM).getReservableDate().toInstant(), ZoneId.systemDefault()).toLocalDate();
-            LocalDate latestSingleReservableDate = LocalDateTime.ofInstant(timeResourceRepository.findFirstByMetaTypeOrderByReservableDateDesc(MetaType.SINGLE).getReservableDate().toInstant(), ZoneId.systemDefault()).toLocalDate();
+            LocalDate latestTeamReservableDate = LocalDateTime.ofInstant(timeResourceRepository.findFirstByMetaTypeAndActiveIsTrueOrderByReservableDateDesc(MetaType.TEAM).getReservableDate().toInstant(), ZoneId.systemDefault()).toLocalDate();
+            LocalDate latestSingleReservableDate = LocalDateTime.ofInstant(timeResourceRepository.findFirstByMetaTypeAndActiveIsTrueOrderByReservableDateDesc(MetaType.SINGLE).getReservableDate().toInstant(), ZoneId.systemDefault()).toLocalDate();
             Map<LocalDate, List<TimeResourceDto.TimeDTO>> validDateMapWeekForSINGLE = timeResourceDto.getValidDateMapWeekForSINGLE();
             Map<LocalDate, List<TimeResourceDto.TimeDTO>> validDateMapWeekForTEAM = timeResourceDto.getValidDateMapWeekForTEAM();
             Map<LocalDate, List<TimeResourceDto.TimeDTO>> validDateMapDayForSINGLE = timeResourceDto.getValidDateMapDayForSINGLE();
@@ -403,14 +403,14 @@ public class TimeResourceServiceImpl implements TimeResourceService {
         }else{
             optionTimes = peopleCount;
         }
-        TimeResource timeResource = timeResourceRepository.findByMetaTypeAndReservableDateAndHourBeginAndMinuteBeginAndAndHourEndAndMinuteEndAndRemainTimesGreaterThan(MetaType.valueOf(activityType.name()), reserveDate, reserveBeginHH, reserveBeginMM, reserveEndHH, reserveEndMM, optionTimes);
+        TimeResource timeResource = timeResourceRepository.findByMetaTypeAndReservableDateAndHourBeginAndMinuteBeginAndAndHourEndAndMinuteEndAndRemainTimesGreaterThanAndActiveIsTrue(MetaType.valueOf(activityType.name()), reserveDate, reserveBeginHH, reserveBeginMM, reserveEndHH, reserveEndMM, optionTimes);
         if(timeResource == null){
             log.error("the time resource does not exist. {}, {}, {}, {}, {}, {}", activityType.name(), reserveDate, reserveBeginHH, reserveBeginMM, reserveEndHH, reserveEndMM);
             throw new TimeResourceNotExistException("the time resource does not exist.");
         }
         Integer remainTimes = timeResource.getRemainTimes();
         if(activityType.isTeam()) {
-            List<TimeResource> dayTimeResources = timeResourceRepository.findByMetaTypeAndReservableDateAndRemainTimesGreaterThan(MetaType.valueOf(activityType.name()), reserveDate, optionTimes);
+            List<TimeResource> dayTimeResources = timeResourceRepository.findByMetaTypeAndReservableDateAndRemainTimesGreaterThanAndActiveIsTrue(MetaType.valueOf(activityType.name()), reserveDate, optionTimes);
             dayTimeResources.forEach(timeResource1 -> timeResource1.setRemainTimes(timeResource1.getRemainTimes() - (peopleCount < 0 ? -1 : 1)));
             timeResourceRepository.save(dayTimeResources);
         }else{
@@ -422,7 +422,7 @@ public class TimeResourceServiceImpl implements TimeResourceService {
             int dayOfWeek = localDate.getDayOfWeek().getValue();
             LocalDateTime firstDayOfWeek = localDate.minusDays(dayOfWeek - 1).atTime(0, 0,0);
             LocalDateTime endDayOfWeek = localDate.plusDays(7 - dayOfWeek).atTime(23, 59, 59);
-            List<TimeResource> timeResourceList = timeResourceRepository.findByMetaTypeAndReservableDateBetween(
+            List<TimeResource> timeResourceList = timeResourceRepository.findByMetaTypeAndReservableDateBetweenAndActiveIsTrue(
                     MetaType.valueOf(activityType.name()),
                     Date.from(firstDayOfWeek.atZone(ZoneId.systemDefault()).toInstant()),
                     Date.from(endDayOfWeek.atZone(ZoneId.systemDefault()).toInstant()));

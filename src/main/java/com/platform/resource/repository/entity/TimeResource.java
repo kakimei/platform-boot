@@ -39,4 +39,7 @@ public class TimeResource {
 
     @Column(name = "remain_times", nullable = false)
     private Integer remainTimes;
+
+    @Column(name = "active", nullable = false)
+    private Boolean active;
 }
