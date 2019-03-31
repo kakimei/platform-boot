@@ -224,13 +224,13 @@ public class TimeResourceServiceImpl implements TimeResourceService {
 
     @Override
     public List<Map.Entry<String, List<TimeResourceDto.TimeDTO>>> getTeamValidTimeResource() {
-        List<TimeResource> validTeamTimeResource = timeResourceRepository.findByMetaTypeAndRemainTimesGreaterThanOrderByReservableDate(MetaType.TEAM, 0);
+        List<TimeResource> validTeamTimeResource = timeResourceRepository.findByMetaTypeAndRemainTimesGreaterThanOrderByReservableDateAscHourBeginAsc(MetaType.TEAM, 0);
         return buildSortedList(validTeamTimeResource);
     }
 
     @Override
     public List<Map.Entry<String, List<TimeResourceDto.TimeDTO>>> getSingleValidTimeResource() {
-        List<TimeResource> validSingleTimeResource = timeResourceRepository.findByMetaTypeAndRemainTimesGreaterThanOrderByReservableDate(MetaType.SINGLE, 0);
+        List<TimeResource> validSingleTimeResource = timeResourceRepository.findByMetaTypeAndRemainTimesGreaterThanOrderByReservableDateAscHourBeginAsc(MetaType.SINGLE, 0);
         return buildSortedList(validSingleTimeResource);
     }
 

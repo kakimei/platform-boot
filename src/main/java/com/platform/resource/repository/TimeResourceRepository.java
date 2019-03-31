@@ -10,7 +10,7 @@ import java.util.List;
 public interface TimeResourceRepository extends JpaRepository<TimeResource, Long> {
     TimeResource findFirstByMetaTypeOrderByReservableDateDesc(MetaType metaType);
 
-    List<TimeResource> findByMetaTypeAndRemainTimesGreaterThanOrderByReservableDate(MetaType metaType, Integer remainTimes);
+    List<TimeResource> findByMetaTypeAndRemainTimesGreaterThanOrderByReservableDateAscHourBeginAsc(MetaType metaType, Integer remainTimes);
 
     TimeResource findByMetaTypeAndReservableDateAndHourBeginAndMinuteBeginAndAndHourEndAndMinuteEndAndRemainTimesGreaterThan(MetaType metaType, Date reservableDate, Integer hourBegin, Integer minuteBegin, Integer hourEnd, Integer minuteEnd, Integer remainTimes);
 
