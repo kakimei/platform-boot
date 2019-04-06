@@ -22,6 +22,7 @@ import java.util.Map;
 public class ReserveVO {
 	private Long reservationInfoId;
 	private String linkManName;
+	private String identityCard;
 	private Sex sex;
 	private Integer age;
 	private String phoneNumber;
@@ -40,6 +41,10 @@ public class ReserveVO {
 	public boolean canReserve(){
 		if(StringUtils.isEmpty(this.linkManName)){
 			log.error("linkMan name can not be null.");
+			return false;
+		}
+		if(StringUtils.isEmpty(this.identityCard)){
+			log.error("identityCard can not be null.");
 			return false;
 		}
 		if(StringUtils.isEmpty(this.phoneNumber)){

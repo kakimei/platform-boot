@@ -20,6 +20,8 @@ public class ReservationInfoDto {
 
 	private String linkManName;
 
+	private String identityCard;
+
 	private Sex sex;
 
 	private Integer age;

@@ -33,6 +33,9 @@ public class ReservationInfo {
 	@Column(name = "linkman_name", nullable = false)
 	private String linkManName;
 
+	@Column(name = "identity_card", nullable = false)
+	private String identityCard;
+
 	@Column(name = "sex", nullable = false)
 	@Enumerated(value = EnumType.STRING)
 	private Sex sex;
