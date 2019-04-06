@@ -175,6 +175,21 @@ public class ReserveFacade {
 		}
 	}
 
+	public Response<List<ReserveVO>> getReservationListByUserNameAndActivityType(Request<ReserveVO> request) {
+		ReserveVO reserveVO = request.getEntity();
+		List<ReserveVO> result = new ArrayList<>();
+		try {
+			List<ReservationInfoDto> reservationList = reservationInfoService.findReservationInfoByUserAndActivityType(reserveVO.getUserName(), reserveVO.getActivityType().name());
+			if (!CollectionUtils.isEmpty(reservationList)) {
+				reservationList.forEach(reservationInfoDto -> result.add(reserveDtoTransferBuilder.toVO(reservationInfoDto)));
+			}
+			return ReserveResponse.<List<ReserveVO>>builder().responseType(ResponseType.SUCCESS).entity(result).build();
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			return ReserveResponse.<List<ReserveVO>>builder().responseType(ResponseType.FAIL).entity(result).build();
+		}
+	}
+
 	//	public Response<List<ReserveVO>> getReservationListBySignIn(Request<ReserveVO> request) {
 	//		ReserveVO reserveVO = request.getEntity();
 	//		List<ReserveVO> result = new ArrayList<>();

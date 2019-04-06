@@ -91,7 +91,7 @@ public class ReserveController {
 		entity.setActivityType(ActivityType.valueOf(activityType));
 		entity.setUserName(user);
 		Request<ReserveVO> request = Request.<ReserveVO>builder().entity(entity).build();
-		Response<List<ReserveVO>> result = reserveFacade.getReservationListByActivityType(request);
+		Response<List<ReserveVO>> result = reserveFacade.getReservationListByUserNameAndActivityType(request);
 		if (result.getResponseType().isSuccess()) {
 			log.info("get reservation list success. activityType : {}", activityType);
 			return result.getEntity();

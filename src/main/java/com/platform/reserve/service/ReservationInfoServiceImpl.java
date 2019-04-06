@@ -202,6 +202,25 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
     }
 
     @Override
+    public List<ReservationInfoDto> findReservationInfoByUserAndActivityType(String userName, String activityType) {
+        List<ReservationInfoDto> result = new ArrayList<>();
+        if (StringUtils.isBlank(userName)) {
+            log.warn("userName is null.");
+            return result;
+        }
+        if (StringUtils.isBlank(activityType)) {
+            log.warn("activityType is null.");
+            return result;
+        }
+        List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByUserNameAAndActivityTypeAndDeletedFalseOrderByReservationInfoIdDesc(userName, ActivityType.valueOf(activityType));
+        if (CollectionUtils.isEmpty(reservationInfoList)) {
+            return result;
+        }
+        reservationInfoList.forEach(reservationInfo -> result.add(reserveDtoTransferBuilder.toDto(reservationInfo)));
+        return result;
+    }
+
+    @Override
     @Transactional(propagation = Propagation.SUPPORTS)
     public List<ReservationInfoDto> findAllActiveReservationInfo() {
         List<ReservationInfoDto> result = new ArrayList<>();

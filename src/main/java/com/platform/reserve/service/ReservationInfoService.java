@@ -23,6 +23,8 @@ public interface ReservationInfoService {
 
 	List<ReservationInfoDto> findReservationInfoByUser(String userName);
 
+	List<ReservationInfoDto> findReservationInfoByUserAndActivityType(String userName, String activityType);
+
 	List<ReservationInfoDto> findAllActiveReservationInfo();
 
 	List<ReservationInfoDto> findAllActiveTeamReservationInfo();
