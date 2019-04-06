@@ -25,7 +25,7 @@ public interface ReservationInfoRepository extends JpaRepository<ReservationInfo
 
 	List<ReservationInfo> findByUserNameAndDeletedFalseOrderByReservationInfoIdDesc(String userName);
 
-	List<ReservationInfo> findByUserNameAAndActivityTypeAndDeletedFalseOrderByReservationInfoIdDesc(String userName, ActivityType activityType);
+	List<ReservationInfo> findByUserNameAndActivityTypeAndDeletedFalseOrderByReservationInfoIdDesc(String userName, ActivityType activityType);
 
 	List<ReservationInfo> findByDeletedFalse();
 

@@ -212,7 +212,7 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
             log.warn("activityType is null.");
             return result;
         }
-        List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByUserNameAAndActivityTypeAndDeletedFalseOrderByReservationInfoIdDesc(userName, ActivityType.valueOf(activityType));
+        List<ReservationInfo> reservationInfoList = reservationInfoRepository.findByUserNameAndActivityTypeAndDeletedFalseOrderByReservationInfoIdDesc(userName, ActivityType.valueOf(activityType));
         if (CollectionUtils.isEmpty(reservationInfoList)) {
             return result;
         }
