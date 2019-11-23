@@ -402,6 +402,7 @@ public class TimeResourceServiceImpl implements TimeResourceService {
             timeResource.setHourEnd(timeDTO.getEndHour());
             timeResource.setMinuteEnd(timeDTO.getEndMinute());
             timeResource.setRemainTimes(timeDTO.getTimes());
+            timeResource.setActive(true);
             result.add(timeResource);
         }
         return result;
