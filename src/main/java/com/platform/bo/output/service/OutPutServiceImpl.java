@@ -74,7 +74,7 @@ public class OutPutServiceImpl implements OutPutService {
 			List<ReservationInfoDto> reservationInfoDtos = entry.getValue();
 			List<ReservationExcelDTO> excelData = reservationInfoDtos.stream().map(reservationInfoDto -> {
 				ReservationExcelDTO reservationExcelDTO = new ReservationExcelDTO();
-				reservationExcelDTO.setActivityType(ActivityType.valueOf(reservationInfoDto.getActivityType().name()));
+				reservationExcelDTO.setIdentityCard(reservationInfoDto.getIdentityCard());
 				reservationExcelDTO.setAge(reservationInfoDto.getAge());
 				reservationExcelDTO.setSex(Sex.valueOf(reservationInfoDto.getSex().name()));
 				reservationExcelDTO.setLinkManName(reservationInfoDto.getLinkManName());
@@ -135,7 +135,7 @@ public class OutPutServiceImpl implements OutPutService {
 			cell.setCellStyle(style);
 
 			cell = row.createCell(7);
-			cell.setCellValue(reservationExcelDTO.getActivityType().getDisplayName());
+			cell.setCellValue(reservationExcelDTO.getIdentityCard());
 			cell.setCellStyle(style);
 		}
 		return workbook;

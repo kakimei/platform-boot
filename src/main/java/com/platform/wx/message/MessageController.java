@@ -37,7 +37,7 @@ public class MessageController {
 
 	private static final String RESERVATION_DETAIL = "http://www.smart-boot.com/reservationModify.html?reservationInfoId=";
 
-	private static final String RESERVATION_LIST = "http://www.smart-boot.com/reservationList.html?activityType=";
+	private static final String RESERVATION_LIST = "http://www.smart-boot.com/myReservationList.html";
 
 	private static final String MESSAGE_TITLE = "恭喜您，预定成功！";
 
@@ -86,7 +86,7 @@ public class MessageController {
 			}
 		}
 		try {
-			httpServletResponse.sendRedirect(RESERVATION_LIST+reservationInfoDto.getActivityType().name());
+			httpServletResponse.sendRedirect(RESERVATION_LIST);
 		} catch (IOException e) {
 			log.warn("redirect error, {}", e.getMessage());
 		}

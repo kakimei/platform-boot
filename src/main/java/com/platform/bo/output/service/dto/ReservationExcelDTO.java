@@ -26,6 +26,6 @@ public class ReservationExcelDTO {
 	private String timeString;
 	@ExcelColumn(columnName = "预约人数", columnStyle = HorizontalAlignment.LEFT)
 	private Integer peopleCount;
-	@ExcelColumn(columnName = "类型", columnStyle = HorizontalAlignment.LEFT)
-	private ActivityType activityType;
+	@ExcelColumn(columnName = "身份证信息", columnStyle = HorizontalAlignment.LEFT)
+	private String identityCard;
 }
