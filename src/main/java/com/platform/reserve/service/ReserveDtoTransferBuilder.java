@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Date;
 
 @Service
 @Slf4j
@@ -99,6 +100,7 @@ public class ReserveDtoTransferBuilder {
 				reservationInfoDto.getReserveEndHH(),
 				reservationInfoDto.getReserveEndMM()));
 		reserveVO.setReserveDay(reservationInfoDto.getReserveDate());
+		reserveVO.setCanModify(reservationInfoDto.getReserveDate().after(new Date()));
 		return reserveVO;
 	}
 

@@ -37,6 +37,7 @@ public class ReserveVO {
 	private Boolean hasSigned;
 	private Boolean inactiveTime;
 	private Boolean hasFeedback;
+	private Boolean canModify;
 
 	public boolean canReserve(){
 		if(StringUtils.isEmpty(this.linkManName)){
