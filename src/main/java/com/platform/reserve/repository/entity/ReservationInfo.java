@@ -73,4 +73,8 @@ public class ReservationInfo {
 
 	@Column(name = "user_name", nullable = false)
 	private String userName;
+
+	@Column(name = "created_by", nullable = false)
+	@Enumerated(value = EnumType.STRING)
+	private Role createdBy;
 }

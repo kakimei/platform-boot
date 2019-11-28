@@ -4,6 +4,7 @@ import com.platform.common.util.DateUtils;
 import com.platform.reserve.controller.vo.ReserveVO;
 import com.platform.reserve.repository.entity.ActivityType;
 import com.platform.reserve.repository.entity.ReservationInfo;
+import com.platform.reserve.repository.entity.Role;
 import com.platform.reserve.repository.entity.Sex;
 import com.platform.reserve.service.dto.ReservationInfoDto;
 import com.platform.resource.service.TimeResourceService;
@@ -65,6 +66,7 @@ public class ReserveDtoTransferBuilder {
 		}
 		ReservationInfo reservationInfo = new ReservationInfo();
 		BeanUtils.copyProperties(reservationInfoDto, reservationInfo, "reservationInfoId", "signIn");
+		reservationInfo.setCreatedBy(reservationInfoDto.getOperator() != null ? Role.valueOf(reservationInfoDto.getOperator().name()) : Role.USER);
 		return reservationInfo;
 	}
 

@@ -5,6 +5,7 @@ import com.platform.feedback.repository.entity.FeedBack;
 import com.platform.reserve.repository.ReservationInfoRepository;
 import com.platform.reserve.repository.entity.ActivityType;
 import com.platform.reserve.repository.entity.ReservationInfo;
+import com.platform.reserve.repository.entity.Role;
 import com.platform.reserve.service.dto.ReservationInfoDto;
 import com.platform.resource.service.TimeResourceService;
 import com.platform.sign.service.SignReservationInfoService;
@@ -51,15 +52,16 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
                 update(reservationInfoDto);
                 return reservationInfoDto.getReservationInfoId();
             }
-
-            timeResourceService.updateRemainedTimes(
-                    reservationInfoDto.getReserveDate(),
-                    reservationInfoDto.getReserveBeginHH(),
-                    reservationInfoDto.getReserveBeginMM(),
-                    reservationInfoDto.getReserveEndHH(),
-                    reservationInfoDto.getReserveEndMM(),
-                    reservationInfoDto.getActivityType(),
-                    reservationInfoDto.getPeopleCount());
+            if (reservationInfoDto.isFromUser()) {
+                timeResourceService.updateRemainedTimes(
+                        reservationInfoDto.getReserveDate(),
+                        reservationInfoDto.getReserveBeginHH(),
+                        reservationInfoDto.getReserveBeginMM(),
+                        reservationInfoDto.getReserveEndHH(),
+                        reservationInfoDto.getReserveEndMM(),
+                        reservationInfoDto.getActivityType(),
+                        reservationInfoDto.getPeopleCount());
+            }
             ReservationInfo saved = reservationInfoRepository.save(reserveDtoTransferBuilder.toEntity(reservationInfoDto));
             return saved.getReservationInfoId();
         } catch (Exception e) {
@@ -83,14 +85,16 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
 
 
         try {
-            timeResourceService.updateRemainedTimes(
-                    reservationInfoDto.getReserveDate(),
-                    reservationInfoDto.getReserveBeginHH(),
-                    reservationInfoDto.getReserveBeginMM(),
-                    reservationInfoDto.getReserveEndHH(),
-                    reservationInfoDto.getReserveEndMM(),
-                    reservationInfoDto.getActivityType(),
-                    reservationInfoDto.getPeopleCount() - reservationInfo.getPeopleCount());
+            if (reservationInfoDto.isFromUser()) {
+                timeResourceService.updateRemainedTimes(
+                        reservationInfoDto.getReserveDate(),
+                        reservationInfoDto.getReserveBeginHH(),
+                        reservationInfoDto.getReserveBeginMM(),
+                        reservationInfoDto.getReserveEndHH(),
+                        reservationInfoDto.getReserveEndMM(),
+                        reservationInfoDto.getActivityType(),
+                        reservationInfoDto.getPeopleCount() - reservationInfo.getPeopleCount());
+            }
             BeanUtils.copyProperties(reservationInfoDto, reservationInfo, "reservationInfoId", "userName");
             reservationInfoRepository.save(reservationInfo);
         } catch (Exception e) {
@@ -294,14 +298,16 @@ public class ReservationInfoServiceImpl implements ReservationInfoService {
             return null;
         }
         try {
-            timeResourceService.updateRemainedTimes(
-                    reservationInfo.getReserveDate(),
-                    reservationInfo.getReserveBeginHH(),
-                    reservationInfo.getReserveBeginMM(),
-                    reservationInfo.getReserveEndHH(),
-                    reservationInfo.getReserveEndMM(),
-                    reservationInfo.getActivityType(),
-                    -reservationInfo.getPeopleCount());
+            if (Role.USER.equals(reservationInfo.getCreatedBy())) {
+                timeResourceService.updateRemainedTimes(
+                        reservationInfo.getReserveDate(),
+                        reservationInfo.getReserveBeginHH(),
+                        reservationInfo.getReserveBeginMM(),
+                        reservationInfo.getReserveEndHH(),
+                        reservationInfo.getReserveEndMM(),
+                        reservationInfo.getActivityType(),
+                        -reservationInfo.getPeopleCount());
+            }
             reservationInfo.setDeleted(true);
             ReservationInfo saved = reservationInfoRepository.save(reservationInfo);
             return reserveDtoTransferBuilder.toDto(saved);

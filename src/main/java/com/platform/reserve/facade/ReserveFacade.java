@@ -68,9 +68,11 @@ public class ReserveFacade {
 	public Response<ReserveVO> reserve(Request<ReserveVO> request) {
 		ReserveVO reserveVO = request.getEntity();
 		try {
-			if (!timeResourceService.isInValidTimeResource(reserveVO.getReserveDay(), reserveVO.getTimeString(),
-				MetaType.valueOf(reserveVO.getActivityType().name()), reserveVO.getPeopleCount())) {
-				throw new ReserveException("the date time is not valid, Please choose valid date time.");
+			if (!reserveVO.isBoChannel()) {
+				if (!timeResourceService.isInValidTimeResource(reserveVO.getReserveDay(), reserveVO.getTimeString(),
+						MetaType.valueOf(reserveVO.getActivityType().name()), reserveVO.getPeopleCount())) {
+					throw new ReserveException("the date time is not valid, Please choose valid date time.");
+				}
 			}
 			mailService.sendMail(emailReceiver, emailSubject, buildEmailContent(reserveVO, emailContentPlatform),
 				() -> {
@@ -78,22 +80,6 @@ public class ReserveFacade {
 					reserveVO.setReservationInfoId(reservationId);
 				});
 		} catch (Exception e){
-			log.error(e.getMessage(), e);
-			return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.FAIL).entity(reserveVO).build();
-		}
-		return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.SUCCESS).entity(reserveVO).build();
-	}
-
-	public Response<ReserveVO> update(Request<ReserveVO> request) {
-		ReserveVO reserveVO = request.getEntity();
-		try {
-			if (!timeResourceService.isInValidTimeResource(reserveVO.getReserveDay(), reserveVO.getTimeString(),
-				MetaType.valueOf(reserveVO.getActivityType().name()), reserveVO.getPeopleCount())) {
-				throw new ReserveException("the date time is not valid, Please choose valid date time.");
-			}
-			mailService.sendMail(emailReceiver, emailSubject, buildEmailContent(reserveVO, emailContentPlatform),
-				() -> reservationInfoService.update(reserveDtoTransferBuilder.toDto(reserveVO)));
-		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			return ReserveResponse.<ReserveVO>builder().responseType(ResponseType.FAIL).entity(reserveVO).build();
 		}

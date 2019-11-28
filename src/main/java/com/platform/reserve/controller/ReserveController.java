@@ -1,6 +1,7 @@
 package com.platform.reserve.controller;
 
 import com.platform.reserve.controller.vo.ActivityType;
+import com.platform.reserve.controller.vo.Operator;
 import com.platform.reserve.controller.vo.ReserveVO;
 import com.platform.facade.Request;
 import com.platform.facade.Response;
@@ -49,8 +50,10 @@ public class ReserveController {
 		}
 		if(isFromBoRequest(httpServletRequest)){
 			reserveVO.setUserName((String) httpServletRequest.getAttribute("boUser"));
+			reserveVO.setOperator(Operator.BO);
 		}else {
 			reserveVO.setUserName((String) httpServletRequest.getAttribute("user"));
+			reserveVO.setOperator(Operator.USER);
 		}
 		Request<ReserveVO> request = Request.<ReserveVO>builder().entity(reserveVO).build();
 		Response<ReserveVO> response = reserveFacade.reserve(request);
@@ -65,8 +68,10 @@ public class ReserveController {
 		}
 		ReserveVO cancelResult;
 		if(isFromBoRequest(httpServletRequest)){
+			reserveVO.setOperator(Operator.BO);
 			cancelResult = cancelByBOUser(reserveVO);
 		}else{
+			reserveVO.setOperator(Operator.USER);
 			cancelResult = cancel(reserveVO, httpServletRequest);
 		}
 		if(cancelResult == null){
@@ -236,6 +241,7 @@ public class ReserveController {
 	public @ResponseBody
 	ReserveVO cancel(@RequestBody ReserveVO reserveVO, HttpServletRequest httpServletRequest) {
 		if(isFromBoRequest(httpServletRequest)){
+			reserveVO.setOperator(Operator.BO);
 			return cancelByBOUser(reserveVO);
 		}
 		String user = (String) httpServletRequest.getAttribute("user");
@@ -243,6 +249,7 @@ public class ReserveController {
 		if (StringUtils.isBlank(user) || reservationInfoId == null || reservationInfoId == 0) {
 			return null;
 		}
+		reserveVO.setOperator(Operator.USER);
 		reserveVO.setUserName(user);
 		Request<ReserveVO> request = Request.<ReserveVO>builder().entity(reserveVO).build();
 		Response<ReserveVO> reserveVOResponse = reserveFacade.cancel(request);

@@ -38,6 +38,7 @@ public class ReserveVO {
 	private Boolean inactiveTime;
 	private Boolean hasFeedback;
 	private Boolean canModify;
+	private Operator operator;
 
 	public boolean canReserve(){
 		if(StringUtils.isEmpty(this.linkManName)){
@@ -84,5 +85,9 @@ public class ReserveVO {
 
 	private boolean teamActivityNumberCheck(){
 		return activityType.isTeam() ? (peopleCount > peopleNumberThreshold) : (peopleCount <= peopleNumberThreshold);
+	}
+
+	public boolean isBoChannel() {
+		return Operator.BO.equals(operator);
 	}
 }

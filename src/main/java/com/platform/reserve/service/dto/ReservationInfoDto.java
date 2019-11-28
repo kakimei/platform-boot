@@ -1,8 +1,8 @@
 package com.platform.reserve.service.dto;
 
+import com.platform.reserve.controller.vo.Operator;
 import com.platform.reserve.repository.entity.ActivityType;
 import com.platform.reserve.repository.entity.Sex;
-import com.platform.feedback.service.dto.FeedBackDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -51,4 +51,10 @@ public class ReservationInfoDto {
 	private String userName;
 
 	private String yearWeek;
+
+	private Operator operator;
+
+	public boolean isFromUser() {
+		return Operator.USER.equals(operator);
+	}
 }
