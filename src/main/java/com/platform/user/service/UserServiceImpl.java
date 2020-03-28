@@ -46,12 +46,9 @@ public class UserServiceImpl implements UserService{
 		}
 		String user = null;
 		try {
-			user = userCache.get(userName, new Callable<String>() {
-				@Override
-				public String call() throws Exception {
-					User user = userRepository.findByUserNameAndActiveIsTrue(userName);
-					return user == null ? "" : user.getUserName();
-				}
+			user = userCache.get(userName, () -> {
+				User user1 = userRepository.findByUserNameAndActiveIsTrue(userName);
+				return user1 == null ? "" : user1.getUserName();
 			});
 		} catch (ExecutionException e) {
 			log.error("cache error : {}", e.getMessage());

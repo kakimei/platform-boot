@@ -335,8 +335,8 @@ public class TimeResourceServiceImpl implements TimeResourceService {
                     timeResourceDto.getValidDateMapDayForSINGLE(),
                     timeResourceDto.getValidDateMapDayForTEAM());
         } else {
-            LocalDate validStartDateForWeekSingle = timeResourceDto.getValidDateMapWeekForSINGLE().keySet().stream().sorted().findFirst().get();
-            LocalDate validStartDateForWeekTeam = timeResourceDto.getValidDateMapWeekForTEAM().keySet().stream().sorted().findFirst().get();
+            LocalDate validStartDateForWeekSingle = timeResourceDto.getValidDateMapWeekForSINGLE().keySet().stream().sorted().findFirst().orElseGet(null);
+            LocalDate validStartDateForWeekTeam = timeResourceDto.getValidDateMapWeekForTEAM().keySet().stream().sorted().findFirst().orElseGet(null);
 
             LocalDate latestTeamReservableDate = LocalDateTime.ofInstant(timeResourceRepository.findFirstByMetaTypeAndActiveIsTrueOrderByReservableDateDesc(MetaType.TEAM).getReservableDate().toInstant(), ZoneId.systemDefault()).toLocalDate();
             LocalDate latestSingleReservableDate = LocalDateTime.ofInstant(timeResourceRepository.findFirstByMetaTypeAndActiveIsTrueOrderByReservableDateDesc(MetaType.SINGLE).getReservableDate().toInstant(), ZoneId.systemDefault()).toLocalDate();
@@ -354,12 +354,16 @@ public class TimeResourceServiceImpl implements TimeResourceService {
     }
 
     private void removeOverTimeResource(LocalDate validStartDateForWeekSingle, LocalDate validStartDateForWeekTeam) {
-        List<TimeResource> teamResource = timeResourceRepository.findByMetaTypeAndReservableDateBeforeAndActiveIsTrue(MetaType.TEAM, Date.from(validStartDateForWeekTeam.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        List<TimeResource> singleResource = timeResourceRepository.findByMetaTypeAndReservableDateBeforeAndActiveIsTrue(MetaType.SINGLE, Date.from(validStartDateForWeekSingle.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        teamResource.forEach(timeResource -> timeResource.setActive(false));
-        singleResource.forEach(timeResource -> timeResource.setActive(false));
-        timeResourceRepository.save(teamResource);
-        timeResourceRepository.save(singleResource);
+        removeOverTimeResource(validStartDateForWeekSingle, MetaType.SINGLE);
+        removeOverTimeResource(validStartDateForWeekTeam, MetaType.TEAM);
+    }
+
+    private void removeOverTimeResource(LocalDate localDate, MetaType metaType) {
+        if (localDate != null) {
+            List<TimeResource> timeResourceList = timeResourceRepository.findByMetaTypeAndReservableDateBeforeAndActiveIsTrue(metaType, Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+            timeResourceList.forEach(timeResource -> timeResource.setActive(false));
+            timeResourceRepository.save(timeResourceList);
+        }
     }
 
     private Map<LocalDate, List<TimeResourceDto.TimeDTO>> filterAfterDate(Map<LocalDate, List<TimeResourceDto.TimeDTO>> map, LocalDate localDate) {
