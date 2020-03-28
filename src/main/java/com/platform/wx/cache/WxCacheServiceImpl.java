@@ -36,6 +36,7 @@ public class WxCacheServiceImpl {
 			HttpResponse httpResponse = httpCilent.execute(httpGet);
 			if (httpResponse.getStatusLine().getStatusCode() == RESPONSE_OK) {
 				String srtResult = EntityUtils.toString(httpResponse.getEntity());
+				log.info("access token response: {}", srtResult);
 				JSONObject jsonObject = new JSONObject(srtResult);
 				String accessToken = jsonObject.getString("access_token");
 				synchronized (access_token){
