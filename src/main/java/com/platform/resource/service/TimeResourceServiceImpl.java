@@ -335,8 +335,8 @@ public class TimeResourceServiceImpl implements TimeResourceService {
                     timeResourceDto.getValidDateMapDayForSINGLE(),
                     timeResourceDto.getValidDateMapDayForTEAM());
         } else {
-            LocalDate validStartDateForWeekSingle = timeResourceDto.getValidDateMapWeekForSINGLE().keySet().stream().sorted().findFirst().orElseGet(null);
-            LocalDate validStartDateForWeekTeam = timeResourceDto.getValidDateMapWeekForTEAM().keySet().stream().sorted().findFirst().orElseGet(null);
+            LocalDate validStartDateForWeekSingle = timeResourceDto.getValidDateMapWeekForSINGLE().keySet().stream().sorted().findFirst().orElse(null);
+            LocalDate validStartDateForWeekTeam = timeResourceDto.getValidDateMapWeekForTEAM().keySet().stream().sorted().findFirst().orElse(null);
 
             LocalDate latestTeamReservableDate = LocalDateTime.ofInstant(timeResourceRepository.findFirstByMetaTypeAndActiveIsTrueOrderByReservableDateDesc(MetaType.TEAM).getReservableDate().toInstant(), ZoneId.systemDefault()).toLocalDate();
             LocalDate latestSingleReservableDate = LocalDateTime.ofInstant(timeResourceRepository.findFirstByMetaTypeAndActiveIsTrueOrderByReservableDateDesc(MetaType.SINGLE).getReservableDate().toInstant(), ZoneId.systemDefault()).toLocalDate();
