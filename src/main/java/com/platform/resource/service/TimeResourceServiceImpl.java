@@ -338,8 +338,12 @@ public class TimeResourceServiceImpl implements TimeResourceService {
             LocalDate validStartDateForWeekSingle = timeResourceDto.getValidDateMapWeekForSINGLE().keySet().stream().sorted().findFirst().orElse(null);
             LocalDate validStartDateForWeekTeam = timeResourceDto.getValidDateMapWeekForTEAM().keySet().stream().sorted().findFirst().orElse(null);
 
-            LocalDate latestTeamReservableDate = LocalDateTime.ofInstant(timeResourceRepository.findFirstByMetaTypeAndActiveIsTrueOrderByReservableDateDesc(MetaType.TEAM).getReservableDate().toInstant(), ZoneId.systemDefault()).toLocalDate();
-            LocalDate latestSingleReservableDate = LocalDateTime.ofInstant(timeResourceRepository.findFirstByMetaTypeAndActiveIsTrueOrderByReservableDateDesc(MetaType.SINGLE).getReservableDate().toInstant(), ZoneId.systemDefault()).toLocalDate();
+            TimeResource teamTimeResource = timeResourceRepository.findFirstByMetaTypeAndActiveIsTrueOrderByReservableDateDesc(MetaType.TEAM);
+            TimeResource singleTimeResource = timeResourceRepository.findFirstByMetaTypeAndActiveIsTrueOrderByReservableDateDesc(MetaType.SINGLE);
+            LocalDate latestTeamReservableDate = teamTimeResource != null ?
+                    LocalDateTime.ofInstant(teamTimeResource.getReservableDate().toInstant(), ZoneId.systemDefault()).toLocalDate() : null;
+            LocalDate latestSingleReservableDate = singleTimeResource != null ?
+                    LocalDateTime.ofInstant(singleTimeResource.getReservableDate().toInstant(), ZoneId.systemDefault()).toLocalDate() : null;
             Map<LocalDate, List<TimeResourceDto.TimeDTO>> validDateMapWeekForSINGLE = timeResourceDto.getValidDateMapWeekForSINGLE();
             Map<LocalDate, List<TimeResourceDto.TimeDTO>> validDateMapWeekForTEAM = timeResourceDto.getValidDateMapWeekForTEAM();
             Map<LocalDate, List<TimeResourceDto.TimeDTO>> validDateMapDayForSINGLE = timeResourceDto.getValidDateMapDayForSINGLE();
@@ -367,7 +371,10 @@ public class TimeResourceServiceImpl implements TimeResourceService {
     }
 
     private Map<LocalDate, List<TimeResourceDto.TimeDTO>> filterAfterDate(Map<LocalDate, List<TimeResourceDto.TimeDTO>> map, LocalDate localDate) {
-        return map.entrySet().stream().filter(e -> e.getKey().isAfter(localDate)).collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+        if (localDate != null) {
+            return map.entrySet().stream().filter(e -> e.getKey().isAfter(localDate)).collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+        }
+        return map;
     }
 
     private void addTimeResource(Map<LocalDate, List<TimeResourceDto.TimeDTO>> validDateMapWeekForSINGLE,
