@@ -33,7 +33,7 @@ public class SignReservationInfoServiceImpl implements SignReservationInfoServic
 			log.warn("sign in failed, the sign reservation info is null.");
 			return;
 		}
-		List<SignReservationInfo> signReservationInfoList = signReservationInfoRepository.findByUserNameAndAndReservationInfoIdAndSignInTrue(
+		List<SignReservationInfo> signReservationInfoList = signReservationInfoRepository.findByUserNameAndReservationInfoIdAndSignInTrue(
 			signReservationInfoDTO.getUserName(),
 			signReservationInfoDTO.getReservationInfoId());
 		if(CollectionUtils.isEmpty(signReservationInfoList)){
@@ -45,7 +45,7 @@ public class SignReservationInfoServiceImpl implements SignReservationInfoServic
 
 	@Override
 	public Boolean hasSignedByReservationInfoIdAndUserName(Long reservationInfoId, String userName) {
-		List<SignReservationInfo> signReservationInfoList = signReservationInfoRepository.findByUserNameAndAndReservationInfoIdAndSignInTrue(
+		List<SignReservationInfo> signReservationInfoList = signReservationInfoRepository.findByUserNameAndReservationInfoIdAndSignInTrue(
 			userName, reservationInfoId);
 		return !CollectionUtils.isEmpty(signReservationInfoList);
 	}
