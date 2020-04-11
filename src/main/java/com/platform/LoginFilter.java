@@ -3,9 +3,10 @@ package com.platform;
 import com.platform.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -28,12 +29,13 @@ public class LoginFilter implements Filter {
 	private static final String REGISTER_URI = "/platform/user/register";
 	private static final String WX_TOKEN = "/platform/weixin/userInfo/get";
 	private static final String BO_URI = "/platform/bo";
-	@Autowired
+
 	private UserService userService;
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
-
+		ApplicationContext applicationContext = WebApplicationContextUtils.getWebApplicationContext(filterConfig.getServletContext());
+		userService = applicationContext.getBean(UserService.class);
 	}
 
 	@Override

@@ -1,11 +1,14 @@
 package com.platform;
 
 import com.platform.bo.userinfo.service.BoUserService;
+import com.platform.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -26,12 +29,12 @@ public class BoFilter implements Filter {
 
 	private static final String LOGIN_URI = "/platform/bo/user/login";
 
-	@Autowired
 	private BoUserService boUserService;
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
-
+		ApplicationContext applicationContext = WebApplicationContextUtils.getWebApplicationContext(filterConfig.getServletContext());
+		boUserService = applicationContext.getBean(BoUserService.class);
 	}
 
 	@Override
